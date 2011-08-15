@@ -19,6 +19,9 @@
 
 import wx
 import wx.lib.agw.thumbnailctrl
+import ScreenGrabber
+from ThumbnailView import *
+
 # begin wxGlade: extracode
 # end wxGlade
 
@@ -44,7 +47,7 @@ class LinSnap(wx.Frame):
         self.SetToolBar(self.lin_snap_frame_toolbar)
         # Tool Bar end
         self.collection_list = wx.ListCtrl(self.v_splitter_pane_1, -1, style=wx.LC_LIST|wx.SUNKEN_BORDER)
-        self.thumbnail_view = wx.lib.agw.thumbnailctrl.ScrolledThumbnail(self.v_splitter_pane_2, -1)
+        self.thumbnail_view = ThumbnailView(self.v_splitter_pane_2, -1)
 
         self.__set_properties()
         self.__do_layout()

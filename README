@@ -1,0 +1,11 @@
+
+
+LinSnap
+
+LinSnap is a screenshot taking and management tool that aims to provide an
+alternative for the paid and Mac only software LittleSnapper.
+
+The target platform is Linux. I do not guarantee portability, but since it is written in Python
+this migh as well be the case.
+
+Author: Groza Cristian

@@ -18,19 +18,21 @@
 
 import wx
 
-class ScreenGrabberWindow(wx.Frame):
-    """
-    This class impelements a window that will collect a the necessary information.
-    """
+# begin wxGlade: extracode
+# end wxGlade
 
+
+
+class SreenGrabberWindow(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: SreenGrabberWindow.__init__
-        
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.top_panel = wx.Panel(self, -1)
         self.save_label = wx.StaticText(self.top_panel, -1, "Pick a colection to save the screenshot in:")
         self.choice_collection = wx.Choice(self.top_panel, -1, choices=[])
+        self.filename_label = wx.StaticText(self.top_panel, -1, "Screenshot file name:")
+        self.filename_text = wx.TextCtrl(self.top_panel, -1, "")
         self.scrn_opt_label = wx.StaticText(self.top_panel, -1, "Screenshot options:")
         self.options_radio_box = wx.RadioBox(self.top_panel, -1, "Capture", choices=["Whole screen", "Current window", "Selected region"], majorDimension=0, style=wx.RA_SPECIFY_COLS)
         self.delay_label = wx.StaticText(self.top_panel, -1, "Screenshot delay: ")
@@ -40,12 +42,13 @@ class ScreenGrabberWindow(wx.Frame):
 
         self.__set_properties()
         self.__do_layout()
+        self.__bind_events()
         # end wxGlade
 
     def __set_properties(self):
         # begin wxGlade: SreenGrabberWindow.__set_properties
-        self.SetTitle("frame_1")
-        self.SetSize((577, 302))
+        self.SetTitle("Take Screenshot")
+        self.SetSize((400, 200))
         self.options_radio_box.SetSelection(0)
         self.bt_take_scrn.SetFocus()
         # end wxGlade
@@ -58,8 +61,14 @@ class ScreenGrabberWindow(wx.Frame):
         scrn_opt_v_sizer = wx.BoxSizer(wx.VERTICAL)
         delay_h_sizer = wx.BoxSizer(wx.HORIZONTAL)
         v_top_sizer = wx.BoxSizer(wx.VERTICAL)
+        h_filename_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        filename_txt_sz = wx.BoxSizer(wx.VERTICAL)
         v_top_sizer.Add(self.save_label, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 0)
         v_top_sizer.Add(self.choice_collection, 0, wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL, 0)
+        h_filename_sizer.Add(self.filename_label, 0, wx.ALL|wx.EXPAND, 0)
+        filename_txt_sz.Add(self.filename_text, 0, wx.ALL|wx.EXPAND, 0)
+        h_filename_sizer.Add(filename_txt_sz, 1, wx.EXPAND, 0)
+        v_top_sizer.Add(h_filename_sizer, 1, wx.EXPAND, 0)
         v_sizer.Add(v_top_sizer, 0, wx.EXPAND, 0)
         scrn_opt_v_sizer.Add(self.scrn_opt_label, 0, wx.ALL|wx.EXPAND, 0)
         scrn_opt_v_sizer.Add(self.options_radio_box, 0, wx.ALL|wx.EXPAND, 0)
@@ -76,11 +85,17 @@ class ScreenGrabberWindow(wx.Frame):
         self.Layout()
         # end wxGlade
 
+    def __bind_events(self):
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
+        self.bt_take_scrn.Bind(wx.EVT_BUTTON, self.OnTakeScreenshot)
+        self.bt_cancel.Bind(wx.EVT_BUTTON, self.OnClose)
+
     def OnTakeScreenshot(self, event):
         pass
 
     def OnClose(self, event):
-        pass
+        self.filename_text.Clear()
+        self.Hide()
     # end of class SreenGrabberWindow
 
 class ScreenGrabber():
@@ -95,3 +110,10 @@ class ScreenGrabber():
         pass
 
 
+if __name__ == "__main__":
+    app = wx.PySimpleApp(0)
+    wx.InitAllImageHandlers()
+    scrn_grabber_win = SreenGrabberWindow(None, -1, "")
+    app.SetTopWindow(scrn_grabber_win)
+    scrn_grabber_win.Show()
+    app.MainLoop()

@@ -18,20 +18,13 @@
 
 
 from xml.etree.ElementTree import *
+import shutil
+import os
 
 class CollectionManager():
     """
     Collection manipulation will be done through this class. 
     """
-
-    class CollectionElem():
-        """
-        This class is used to store information about collection elements.
-        """
-        def __init__(self, name, file_name, tags):
-            self.name = name
-            self.file_name = file_name
-            self.tags = tags
 
     def __init__(self, collection_file):
         self.collection_file = collection_file
@@ -39,20 +32,46 @@ class CollectionManager():
         self.name = ""
         self.dir = ""
 
-    def GetElementAttribute(self, elem, attr):
-        pass
+    def CreateElement(self, attrs):
+        SubElement(self.elem_tree, "Element", attrs)
 
-    def SetElementAttribute(self, elem, attr, val):
-        pass
+    def GetElementAttribute(self, name, attr):
+        iterator = self.elem_tree.iter("Element")
+        for e in iterator():
+            if e.get("name") == name: return e.get(attr)
+        return None
 
-    def AddElement(self, elem)
+    def SetElementAttribute(self, name, attr, val):
+        iterator = self.elem_tree.iter("Element")
+        for e in iterator():
+            if e.get("name") == name:
+                e.set(attr, val)
 
-    def DeleteElememnt(self, elem):
-        pass
 
-    def RenameElement(self, elem):
-        pass
+    def AddElement(self, element):
+        self.elem_tree.getroot().insert(1, element)
+
+    def DeleteElement(self, name):
+        iterator = self.elem_tree.iter("Element")
+        for e in iterator():
+            if e.get("name") == name:
+                self.elem_tree.getroot().remove(e)
+                
+
+    def RenameElement(self, name, new_name):
+        iterator = self.elem_tree.iter("Element")
+        for e in iterator():
+            if e.get("name") == name:
+                e.set("name", new_name)
+                new_path = os.join(os.split(e.get("path"))[0], new_name)
+                os.rename(e.get("path"), new_path)
+                e.set("path", path) 
+
 
     def MoveElement(self, elem, new_collection):
-        pass
-
+        iterator = self.elem_tree.iter("Element")
+        for e in iterator():
+            if e.get("name") == name:
+                new_collection.AddElement(e)
+                self.rename(e.get("path"), os.join(new_collection.dir, elem.get("name")))
+                self.elem_tree.getroot().remove(e)

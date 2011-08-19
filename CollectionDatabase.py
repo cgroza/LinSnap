@@ -16,6 +16,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from CollectionManager import *
+
 
 class CollectionDatabase():
     """
@@ -31,15 +33,21 @@ class CollectionDatabase():
     def __WriteCollectionsFile(self):
         pass
 
-    def GetCollection(self, name):
-        pass
+    def GetCollection(self, collection_name):
+        return self.collections[name]
 
     def CreateCollection(self, collection_name, collection_folder):
-        pass
+        new_collection = Collection()
+        new_collection.name = collection_name
+        new_collection.dir = collection_folder
+        if self.colloction_name not in collections:
+            self.collections[collection_name] = new_collection
 
-    def RemoveCollection(self, collection):
-        pass
+    def RemoveCollection(self, collection_name):
+        del self.collections[collection_name]
 
-    def RenameCollection(self, collection):
-        pass
-
+    def RenameCollection(self, collection_name, new_collection_name):
+        collection = self.collections[collection_name]
+        collection.name = new_collection_name
+        del self.collections[collection_name]
+        self.collections[new_collection_name] = collection

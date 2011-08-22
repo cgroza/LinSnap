@@ -17,7 +17,8 @@
 # -*- coding: utf-8 -*-
 
 import wx
-
+import CollectionManager
+import CollectionDatabase
 # begin wxGlade: extracode
 # end wxGlade
 
@@ -90,8 +91,8 @@ class SreenGrabberWindow(wx.Frame):
         self.bt_take_scrn.Bind(wx.EVT_BUTTON, self.OnTakeScreenshot)
         self.bt_cancel.Bind(wx.EVT_BUTTON, self.OnClose)
 
-    def OnTakeScreenshot(self, event):
-        pass
+    def OnTakeScreenshot(self, take):
+        scrn_shot = ScreenGrabber.TakeScreenShot(scrn_rect)
 
     def OnClose(self, event):
         self.filename_text.Clear()
@@ -102,13 +103,42 @@ class ScreenGrabber():
     """
     This class manages the screenshot taking process.
     """
-    def __init__(self):
-        pass
 
+    @staticmethod
+    def TakeScreenShot(self, rect):
+        """ Takes a screenshot of the screen at give pos & size (rect). """
 
-    def TakeScreenshot(self):
-        pass
+        #Create a DC for the whole screen area
+        dcScreen = wx.ScreenDC()
 
+        #Create a Bitmap that will later on hold the screenshot image
+        #Note that the Bitmap must have a size big enough to hold the screenshot
+        #-1 means using the current default colour depth
+        bmp = wx.EmptyBitmap(rect.width, rect.height)
+
+        #Create a memory DC that will be used for actually taking the screenshot
+        memDC = wx.MemoryDC()
+
+        #Tell the memory DC to use our Bitmap
+        #all drawing action on the memory DC will go to the Bitmap now
+        memDC.SelectObject(bmp)
+
+        #Blit (in this case copy) the actual screen on the memory DC
+        #and thus the Bitmap
+        memDC.Blit( 0, #Copy to this X coordinate
+            0, #Copy to this Y coordinate
+            rect.width, #Copy this width
+            rect.height, #Copy this height
+            dcScreen, #From where do we copy?
+            rect.x, #What's the X offset in the original DC?
+            rect.y  #What's the Y offset in the original DC?
+            )
+
+        #Select the Bitmap out of the memory DC by selecting a new
+        #uninitialized Bitmap
+        memDC.SelectObject(wx.NullBitmap)
+
+        return bmp 
 
 if __name__ == "__main__":
     app = wx.PySimpleApp(0)

@@ -32,9 +32,13 @@ class CollectionManager():
         self.name = ""
         self.dir = ""
 
+    def SaveTree(self):
+        self.elem_tree.write(self.collection_file, "utf-8")
+
     def CreateElement(self, attrs):
         SubElement(self.elem_tree, "Element", attrs)
-
+        self.SaveTree()
+        
     def GetElementAttribute(self, name, attr):
         iterator = self.elem_tree.iter("Element")
         for e in iterator():
@@ -50,13 +54,14 @@ class CollectionManager():
 
     def AddElement(self, element):
         self.elem_tree.getroot().insert(1, element)
+        self.SaveTree()
 
     def DeleteElement(self, name):
         iterator = self.elem_tree.iter("Element")
         for e in iterator():
             if e.get("name") == name:
                 self.elem_tree.getroot().remove(e)
-                
+                self.SaveTree()                
 
     def RenameElement(self, name, new_name):
         iterator = self.elem_tree.iter("Element")
@@ -66,7 +71,7 @@ class CollectionManager():
                 new_path = os.join(os.split(e.get("path"))[0], new_name)
                 os.rename(e.get("path"), new_path)
                 e.set("path", path) 
-
+                self.SaveTree()
 
     def MoveElement(self, elem, new_collection):
         iterator = self.elem_tree.iter("Element")
@@ -75,3 +80,4 @@ class CollectionManager():
                 new_collection.AddElement(e)
                 self.rename(e.get("path"), os.join(new_collection.dir, elem.get("name")))
                 self.elem_tree.getroot().remove(e)
+                self.SaveTree()

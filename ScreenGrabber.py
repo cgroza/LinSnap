@@ -25,10 +25,11 @@ import CollectionDatabase
 
 
 class SreenGrabberWindow(wx.Frame):
-    def __init__(self, *args, **kwds):
+    def __init__(self, collection_db, *args, **kwds):
         # begin wxGlade: SreenGrabberWindow.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
+        self.collection_db = collection_db
         self.top_panel = wx.Panel(self, -1)
         self.save_label = wx.StaticText(self.top_panel, -1, "Pick a colection to save the screenshot in:")
         self.choice_collection = wx.Choice(self.top_panel, -1, choices=[])
@@ -91,8 +92,25 @@ class SreenGrabberWindow(wx.Frame):
         self.bt_take_scrn.Bind(wx.EVT_BUTTON, self.OnTakeScreenshot)
         self.bt_cancel.Bind(wx.EVT_BUTTON, self.OnClose)
 
+    def GetRectSelection(self):
+        pass
+
     def OnTakeScreenshot(self, take):
-        scrn_shot = ScreenGrabber.TakeScreenShot(scrn_rect)
+        collection_name = ""    # TODO
+        scrn_filename = self.filename_text.GetValue()
+        scrn_rect = self.GetRectSelection()
+
+        if scrn_filename:
+            selected_col = self.collection_db.GetCollection(collection_name)
+            scrn_shot_bmp = ScreenGrabber.TakeScreenShot(scrn_rect)
+            scrn_img = scrn_shot_bmp.ToImage()
+            path = os.path.join(selected_col.dir, scrn_filename)
+            scrn_img.Save(path)
+            elem_attrs = { "tags" : "", "name" : scrn_filename, "path" : path }
+            selected_col.CreateElement(elem_attrs)
+        else:
+            wx.MessageDialog(None, "Invalid file name. Please choose a valid file name.", "Error", wx.OK | wx.ICON_ERROR).ShowModal()
+
 
     def OnClose(self, event):
         self.filename_text.Clear()
@@ -143,7 +161,7 @@ class ScreenGrabber():
 if __name__ == "__main__":
     app = wx.PySimpleApp(0)
     wx.InitAllImageHandlers()
-    scrn_grabber_win = SreenGrabberWindow(None, -1, "")
+    scrn_grabber_win = SreenGrabberWindow(None, None, -1, "")
     app.SetTopWindow(scrn_grabber_win)
     scrn_grabber_win.Show()
     app.MainLoop()

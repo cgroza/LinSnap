@@ -51,3 +51,4 @@ class CollectionDatabase():
         collection.name = new_collection_name
         del self.collections[collection_name]
         self.collections[new_collection_name] = collection
+

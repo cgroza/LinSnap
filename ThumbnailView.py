@@ -33,3 +33,5 @@ class ThumbnailView(ScrolledThumbnail):
         pass
 
 
+    def OnThumbDoubleClick(self, event):
+        pass

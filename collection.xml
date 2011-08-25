@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<Collection name = "SampleCollection">
+<Collection name = "SampleCollection" path = "/media/colloction.xml" >
 
   <Element tags = "sample element"  name = "sample_element" path = "/sample/path.png"/>
 

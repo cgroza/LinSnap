@@ -16,8 +16,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 from CollectionManager import *
-
 
 class CollectionDatabase():
     """
@@ -26,12 +26,24 @@ class CollectionDatabase():
     def __init__(self, collections_file):
         self.collections_file = collections_file
         self.collections = {}
+        self._ReadCollectionsFile()
 
-    def __ReadCollectionsFile(self):
-        pass
+    def _ReadCollectionsFile(self):
+        with open(self.collections_file, "r") as col_file:
+            for line in col_file:
+                left_right = line.split("=")
+                col_name = left_right[0].strip()
+                col_file = left_right[1].strip()
+                self.collections[col_name] = CollectionManager(col_file, col_name)
 
-    def __WriteCollectionsFile(self):
-        pass
+    def _WriteCollectionsFile(self):
+        with open(self.collections_file, "w") as col_file:
+            col_file.write("")
+
+        with open(self.collections_file, "a") as col_file:
+            for col in collections:
+                col_file.write(col + " = " + collections[col].dir)
+                
 
     def GetCollection(self, collection_name):
         return self.collections[name]
@@ -42,13 +54,15 @@ class CollectionDatabase():
         new_collection.dir = collection_folder
         if self.colloction_name not in collections:
             self.collections[collection_name] = new_collection
-
+        self._WriteCollectionsFile()
+        
     def RemoveCollection(self, collection_name):
         del self.collections[collection_name]
+        self._WriteCollectionsFile()
 
     def RenameCollection(self, collection_name, new_collection_name):
         collection = self.collections[collection_name]
-        collection.name = new_collection_name
+        collection.SetName(new_collection_name)
         del self.collections[collection_name]
         self.collections[new_collection_name] = collection
-
+        self._WriteCollectionsFile()

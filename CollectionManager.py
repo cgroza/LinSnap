@@ -26,11 +26,18 @@ class CollectionManager():
     Collection manipulation will be done through this class. 
     """
 
-    def __init__(self, collection_file):
+    def __init__(self, collection_file, name):
         self.collection_file = collection_file
         self.elem_tree = ElementTree(None, self.collection_file)
-        self.name = ""
-        self.dir = ""
+        self.name = name
+        iterator = self.elem_tree.iter("Collection")
+        for col in iterator:
+            self.dir = col.get("path")
+
+    def SetName(self, new_name):
+        iterator = self.elem_tree.iter("Collection")
+        for col in iterator:
+            col.set("name", new_name)
 
     def SaveTree(self):
         self.elem_tree.write(self.collection_file, "utf-8")

@@ -23,8 +23,14 @@ class AddCollectionWin(wx.Frame):
         self.add_collection_bt = wx.Button(self.top_panel, -1, "Add Collection")
 
         self.__set_properties()
+        self.__do_event_bindings()
         self.__do_layout()
         # end wxGlade
+
+    def __do_event_bindings(self):
+        self.add_collection_bt.Bind(wx.EVT_BUTTON, self.OnAddCollectionBt)
+        self.cancel_bt.Bind(wx.EVT_BUTTON, self.OnClose)
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
     def __set_properties(self):
         # begin wxGlade: AddCollectionWin.__set_properties
@@ -59,6 +65,13 @@ class AddCollectionWin(wx.Frame):
         self.SetSizer(top_sizer)
         self.Layout()
         # end wxGlade
+
+    def OnClose(self, event):
+        self.Hide()
+        self.collection_txt.Clear()
+        
+    def OnAddCollectionBt(self, event):
+        pass
 
 # end of class AddCollectionWin
 

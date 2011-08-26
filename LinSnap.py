@@ -23,6 +23,8 @@ import wx.lib.agw.thumbnailctrl
 import ScreenGrabber
 from ThumbnailView import *
 from CollectionDatabase import *
+from AddCollectionWin import *
+
 # begin wxGlade: extracode
 # end wxGlade
 
@@ -47,6 +49,8 @@ class LinSnap(wx.Frame):
         self.v_splitter_pane_2 = wx.Panel(self.v_splitter, -1)
         self.v_splitter_pane_1 = wx.Panel(self.v_splitter, -1)
         
+        self.add_collection_win = AddCollectionWin(self)
+
         # Menu Bar
         self.lin_snap_frame_menubar = wx.MenuBar()
         self.SetMenuBar(self.lin_snap_frame_menubar)
@@ -58,11 +62,17 @@ class LinSnap(wx.Frame):
         self.SetToolBar(self.lin_snap_frame_toolbar)
         # Tool Bar end
         self.collection_list = wx.ListCtrl(self.v_splitter_pane_1, -1, style=wx.LC_LIST|wx.SUNKEN_BORDER)
-        self.thumbnail_view = ThumbnailView(self.v_splitter_pane_2, -1)
+        self.add_collection_bt = wx.Button(self.v_splitter_pane_1, -1, "Add Collection")
 
+        self.thumbnail_view = ThumbnailView(self.v_splitter_pane_2, -1)
+        
         self.__set_properties()
+        self.__do_event_bindings()
         self.__do_layout()
         # end wxGlade
+
+    def __do_event_bindings(self):
+        self.add_collection_bt.Bind(wx.EVT_BUTTON, self.OnAddCollectionBt)
 
     def __set_properties(self):
         # begin wxGlade: LinSnap.__set_properties
@@ -82,6 +92,7 @@ class LinSnap(wx.Frame):
         right_sizer = wx.BoxSizer(wx.HORIZONTAL)
         left_sizer = wx.BoxSizer(wx.VERTICAL)
         left_sizer.Add(self.collection_list, 1, wx.EXPAND, 0)
+        left_sizer.Add(self.add_collection_bt, 0, wx.EXPAND, 0)
         self.v_splitter_pane_1.SetSizer(left_sizer)
         right_sizer.Add(self.thumbnail_view, 1, wx.EXPAND, 0)
         self.v_splitter_pane_2.SetSizer(right_sizer)
@@ -107,6 +118,8 @@ class LinSnap(wx.Frame):
             with open(self.CFG_DIR_FILE, "w") as cfg_file:
                 cfg_file.write("")
             
+    def OnAddCollectionBt(self, event):
+        self.add_collection_win.Show()
 
 # end of class LinSnap
 

@@ -43,7 +43,7 @@ class LinSnap(wx.Frame):
         if not self._CfgFilesExist():
             self._CreateCfgFiles()
 
-        self.collections = CollectionDatabase(self.CFG_DIR_FILE)
+        self.collections = CollectionDatabase(self.CFG_DIR_FILE, self.CFG_DIR)
 
         self.v_splitter = wx.SplitterWindow(self, -1, style=wx.SP_3D|wx.SP_BORDER)
         self.v_splitter_pane_2 = wx.Panel(self.v_splitter, -1)

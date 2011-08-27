@@ -10,11 +10,11 @@ import wx
 
 
 class AddCollectionWin(wx.Frame):
-    def __init__(self, *args, **kwds):
+    def __init__(self, parent, id = -1):
         # begin wxGlade: AddCollectionWin.__init__
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE
-        wx.Frame.__init__(self, *args, **kwds)
-        self.top_panel = wx.Panel(self, -1)
+        self.parent = parent
+        wx.Frame.__init__(self, self.parent, id)
+        self.top_panel = wx.Panel(self)
         self.collection_name_label = wx.StaticText(self.top_panel, -1, "New collection name: ")
         self.collection_txt = wx.TextCtrl(self.top_panel, -1, "")
         self.collection_dir_label = wx.StaticText(self.top_panel, -1, "Collection directory: ")
@@ -71,7 +71,10 @@ class AddCollectionWin(wx.Frame):
         self.collection_txt.Clear()
         
     def OnAddCollectionBt(self, event):
-        pass
+        collection_name = self.collection_txt.GetValue().strip()
+        if collection_name not in self.parent.collections.collections:
+            self.parent.collections.CreateCollection(collection_name, self.collection_dir_picker.GetPath())
+            self.parent.collection_list.InsertStringItem(0, collection_name)
 
 # end of class AddCollectionWin
 

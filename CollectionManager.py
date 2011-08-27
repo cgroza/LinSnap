@@ -28,23 +28,34 @@ class CollectionManager():
 
     def __init__(self, collection_file, name):
         self.collection_file = collection_file
-        self.elem_tree = parse(self.collection_file)# ElementTree(None, self.collection_file)
+        self.elem_tree = parse(self.collection_file)
 
         self.name = name
         self.SetName(self.name)
         iterator = self.elem_tree.iter("Collection")
         for col in iterator:
             self.dir = col.get("path")
+        self.CheckForNewFiles()
 
     def SetName(self, new_name):
         iterator = self.elem_tree.iter("Collection")
+        self.name = new_name
         for col in iterator:
             col.set("name", new_name)
+        self.SaveTree()
+
+    def SetDir(self, new_dir):
+        print new_dir
+        iterator = self.elem_tree.iter("Collection")
+        self.dir = new_dir
+        for col in iterator:
+            col.set("path", new_dir)
+        self.SaveTree()
 
     def SaveTree(self):
-        iterator = self.elem_tree.iter("Collection")
-        for col in iterator:
-            col.set("path", self.dir)
+        # iterator = self.elem_tree.iter("Collection")
+        # for col in iterator:
+        #     col.set("path", self.dir)
         self.elem_tree.write(self.collection_file, "utf-8")
 
     def CreateElement(self, attrs):
@@ -95,5 +106,8 @@ class CollectionManager():
                 self.SaveTree()
 
     def IndexFiles(self):
+        pass
+
+    def CheckForNewFiles(self):
         pass
 

@@ -127,7 +127,7 @@ class LinSnap(wx.Frame):
         # add existing collections to the list
         self.collection_list.ClearAll()
         for item in self.collections.collections:
-            self.collection_list.AddStringItem(item, 0)
+            self.collection_list.InsertStringItem(0, item)
         
 
 

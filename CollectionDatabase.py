@@ -26,11 +26,12 @@ class CollectionDatabase():
 
     defaul_xml_tree ="""<?xml version="1.0" encoding="UTF-8"?>
 
- <Collection name = "SampleCollection" path = "/media/colloction.xml" >
+ <Collection name = "SampleCollection" path = "/media/collection.xml" >
 
-    <Element tags = "sample element"  name = "sample_element" path = "/sample/path.png"/>
+<!--    <Element tags = "sample element"  name = "sample_element" path = "/sample/path.png"/> -->
 
   </Collection>
+
   """
 
     def __init__(self, collections_file, collections_dir):
@@ -46,7 +47,8 @@ class CollectionDatabase():
                 col_name = left_right[0].strip()
                 col_file = left_right[1].strip()
                 if col_file and col_name:
-                    self.collections[col_name] = CollectionManager(col_file, col_name)
+                    if os.path.exists(col_file):
+                        self.collections[col_name] = CollectionManager(col_file, col_name)
 
     def _WriteCollectionsFile(self):
         with open(self.collections_file, "w") as col_file:
@@ -54,7 +56,7 @@ class CollectionDatabase():
 
         with open(self.collections_file, "a") as col_file:
             for col in self.collections:
-                col_file.write(col + " = " + self.collections[col].dir)
+                col_file.write(col + " = " + self.collections[col].collection_file + "\n")
                 
 
     def GetCollection(self, collection_name):
@@ -70,8 +72,8 @@ class CollectionDatabase():
 
             #create collection
             new_collection = CollectionManager(collection_file, collection_name)
-            new_collection.name = collection_name
-            new_collection.dir = collection_folder
+            new_collection.SetName(collection_name)
+            new_collection.SetDir(collection_folder)
             self.collections[collection_name] = new_collection
             new_collection.SaveTree()
             new_collection.IndexFiles()

@@ -62,6 +62,8 @@ class LinSnap(wx.Frame):
         self.SetToolBar(self.lin_snap_frame_toolbar)
         # Tool Bar end
         self.collection_list = wx.ListCtrl(self.v_splitter_pane_1, -1, style=wx.LC_LIST|wx.SUNKEN_BORDER)
+        self._PopulateCollectionList()
+
         self.add_collection_bt = wx.Button(self.v_splitter_pane_1, -1, "Add Collection")
 
         self.thumbnail_view = ThumbnailView(self.v_splitter_pane_2, -1)
@@ -120,6 +122,14 @@ class LinSnap(wx.Frame):
             
     def OnAddCollectionBt(self, event):
         self.add_collection_win.Show()
+
+    def _PopulateCollectionList(self):
+        # add existing collections to the list
+        self.collection_list.ClearAll()
+        for item in self.collections.collections:
+            self.collection_list.AddStringItem(item, 0)
+        
+
 
 # end of class LinSnap
 

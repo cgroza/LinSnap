@@ -37,7 +37,7 @@ class CollectionManager():
         iterator = self.elem_tree.iter("Collection")
         for col in iterator:
             self.dir = col.get("path")
-        self.CheckForNewFiles()
+#        self.CheckForNewFiles()
 
     def SetName(self, new_name):
         iterator = self.elem_tree.iter("Collection")
@@ -47,7 +47,6 @@ class CollectionManager():
         self.SaveTree()
 
     def SetDir(self, new_dir):
-        print new_dir
         iterator = self.elem_tree.iter("Collection")
         self.dir = new_dir
         for col in iterator:

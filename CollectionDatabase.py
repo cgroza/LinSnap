@@ -48,7 +48,9 @@ class CollectionDatabase():
                 col_file = left_right[1].strip()
                 if col_file and col_name:
                     if os.path.exists(col_file):
-                        self.collections[col_name] = CollectionManager(col_file, col_name)
+                        collection = CollectionManager(col_file, col_name)
+                        collection.CheckForNewFiles()
+                        self.collections[col_name] = collection
 
     def _WriteCollectionsFile(self):
         with open(self.collections_file, "w") as col_file:
@@ -60,7 +62,7 @@ class CollectionDatabase():
                 
 
     def GetCollection(self, collection_name):
-        return self.collections[name]
+        return self.collections[collection_name]
 
     def CreateCollection(self, collection_name, collection_folder):
         if collection_name not in self.collections:

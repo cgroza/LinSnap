@@ -75,6 +75,7 @@ class LinSnap(wx.Frame):
 
     def __do_event_bindings(self):
         self.add_collection_bt.Bind(wx.EVT_BUTTON, self.OnAddCollectionBt)
+        self.collection_list.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnSelectCollection)
 
     def __set_properties(self):
         # begin wxGlade: LinSnap.__set_properties
@@ -122,6 +123,10 @@ class LinSnap(wx.Frame):
             
     def OnAddCollectionBt(self, event):
         self.add_collection_win.Show()
+
+    def OnSelectCollection(self, event):
+        col_name = self.collection_list.GetItemText(self.collection_list.GetFocusedItem())
+        self.thumbnail_view.ShowDir(self.collections.GetCollection(col_name).dir)
 
     def _PopulateCollectionList(self):
         # add existing collections to the list

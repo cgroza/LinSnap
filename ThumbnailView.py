@@ -19,13 +19,13 @@
 
 from wx.lib.agw.thumbnailctrl import *
 
-class ThumbnailView(ScrolledThumbnail):
+class ThumbnailView(ThumbnailCtrl):
     """
     This class manages the thumbnail display and related events and functions.
     """
     def __init__(self, parent, id):
         self.parent = parent
-        ScrolledThumbnail.__init__(self, self.parent, id, (-1, -1), (-1, -1),
+        ThumbnailCtrl.__init__(self, self.parent, id, (-1, -1), (-1, -1),
                                    THUMB_OUTLINE_RECT, THUMB_FILTER_IMAGES, PILImageHandler)
 
 

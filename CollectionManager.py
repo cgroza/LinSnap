@@ -26,6 +26,8 @@ class CollectionManager():
     Collection manipulation will be done through this class. 
     """
 
+    __img_extensions = ["jpg","jpeg","png","bmp"]
+
     def __init__(self, collection_file, name):
         self.collection_file = collection_file
         self.elem_tree = parse(self.collection_file)
@@ -74,6 +76,12 @@ class CollectionManager():
             if e.get("name") == name:
                 e.set(attr, val)
 
+    def FindElement(self, elem_name):
+        iterator = self.elem_tree.iter("Element")
+        for e in iterator():
+            if e.get("name") == elem_name:
+                return e
+        return False
 
     def AddElement(self, element):
         self.elem_tree.getroot().insert(1, element)
@@ -106,8 +114,27 @@ class CollectionManager():
                 self.SaveTree()
 
     def IndexFiles(self):
-        pass
+        all_files = os.listdir(self.dir)
+        # filter image files
+        img_files = [ f for f in all_files if f.split(".")[-1].lower() in CollectionManager.__img_extensions ]
+        for img_f in img_files:
+            self.CreateElement({ "tags": "", "name" : img_f, "path" : os.path.join(self.dir, img_f)})
+
 
     def CheckForNewFiles(self):
-        pass
+        all_files = os.listdir(self.dir)
+        img_files = [ f for f in all_files if f.split(".")[-1].lower() in CollectionManager.__img_extensions ]
+        # check for new files
+        for img_f in img_files:
+            if not self.FindElement(img_f):
+                self.CreateElement({ "tags": "", "name" : img_f, "path" : os.path.join(self.dir, img_f)})
 
+        # check for deleted files
+        iterator = self.elem_tree.iter("Element")
+        for e in iterator():
+            if e.get("name") not in img_files:
+                self.elem_tree.getroot().remove(e)
+
+
+
+        

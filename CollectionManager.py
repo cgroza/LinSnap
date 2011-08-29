@@ -60,24 +60,24 @@ class CollectionManager():
         self.elem_tree.write(self.collection_file, "utf-8")
 
     def CreateElement(self, attrs):
-        SubElement(self.elem_tree, "Element", attrs)
+        self.elem_tree.getroot().insert(1, Element("Element", attrs))
         self.SaveTree()
         
     def GetElementAttribute(self, name, attr):
         iterator = self.elem_tree.iter("Element")
-        for e in iterator():
+        for e in iterator:
             if e.get("name") == name: return e.get(attr)
         return None
 
     def SetElementAttribute(self, name, attr, val):
         iterator = self.elem_tree.iter("Element")
-        for e in iterator():
+        for e in iterator:
             if e.get("name") == name:
                 e.set(attr, val)
 
     def FindElement(self, elem_name):
         iterator = self.elem_tree.iter("Element")
-        for e in iterator():
+        for e in iterator:
             if e.get("name") == elem_name:
                 return e
         return False
@@ -88,14 +88,14 @@ class CollectionManager():
 
     def DeleteElement(self, name):
         iterator = self.elem_tree.iter("Element")
-        for e in iterator():
+        for e in iterator:
             if e.get("name") == name:
                 self.elem_tree.getroot().remove(e)
                 self.SaveTree()                
 
     def RenameElement(self, name, new_name):
         iterator = self.elem_tree.iter("Element")
-        for e in iterator():
+        for e in iterator:
             if e.get("name") == name:
                 e.set("name", new_name)
                 new_path = os.join(os.split(e.get("path"))[0], new_name)
@@ -105,7 +105,7 @@ class CollectionManager():
 
     def MoveElement(self, elem, new_collection):
         iterator = self.elem_tree.iter("Element")
-        for e in iterator():
+        for e in iterator:
             if e.get("name") == name:
                 new_collection.AddElement(e)
                 self.rename(e.get("path"), os.join(new_collection.dir, elem.get("name")))
@@ -125,15 +125,13 @@ class CollectionManager():
         img_files = [ f for f in all_files if f.split(".")[-1].lower() in CollectionManager.__img_extensions ]
         # check for new files
         for img_f in img_files:
-            if not self.FindElement(img_f):
+            if self.FindElement(img_f) == False:
                 self.CreateElement({ "tags": "", "name" : img_f, "path" : os.path.join(self.dir, img_f)})
 
         # check for deleted files
         iterator = self.elem_tree.iter("Element")
-        for e in iterator():
+        for e in iterator:
             if e.get("name") not in img_files:
                 self.elem_tree.getroot().remove(e)
 
 
-
-        

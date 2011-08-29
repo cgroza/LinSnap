@@ -103,6 +103,7 @@ class LinSnap(wx.Frame):
         top_sizer.Add(self.v_splitter, 1, wx.EXPAND, 0)
         self.SetSizer(top_sizer)
         self.Layout()
+        self.v_splitter.SetSashPosition(200)
         self.Centre()
         # end wxGlade
 

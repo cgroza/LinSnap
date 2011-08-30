@@ -24,6 +24,7 @@ class CollectionDatabase():
     All manipulation of CollectionManagers will be done through this class.
     """
 
+    # This string is wrintten in any new collection file. The respective fields are updated.
     defaul_xml_tree ="""<?xml version="1.0" encoding="UTF-8"?>
 
  <Collection name = "SampleCollection" path = "/media/collection.xml" >
@@ -41,6 +42,7 @@ class CollectionDatabase():
         self._ReadCollectionsFile()
 
     def _ReadCollectionsFile(self):
+        # for every line in file, split on equal and make the result key : string
         with open(self.collections_file, "r") as col_file:
             for line in col_file:
                 left_right = line.split("=")
@@ -53,9 +55,11 @@ class CollectionDatabase():
                         self.collections[col_name] = collection
 
     def _WriteCollectionsFile(self):
+        # empty file
         with open(self.collections_file, "w") as col_file:
             col_file.write("")
 
+        # write the format key = string in file 
         with open(self.collections_file, "a") as col_file:
             for col in self.collections:
                 col_file.write(col + " = " + self.collections[col].collection_file + "\n")
@@ -84,6 +88,9 @@ class CollectionDatabase():
         return new_collection
         
     def RemoveCollection(self, collection_name):
+        # remove collection xml file
+        os.remove(self.GetCollection(collection_name).collection_file)
+        # delete it from the internal dictionaries
         del self.collections[collection_name]
         self._WriteCollectionsFile()
 

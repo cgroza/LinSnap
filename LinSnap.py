@@ -48,7 +48,7 @@ class LinSnap(wx.Frame):
         self.v_splitter = wx.SplitterWindow(self, -1, style=wx.SP_3D|wx.SP_BORDER)
         self.v_splitter_pane_2 = wx.Panel(self.v_splitter, -1)
         self.v_splitter_pane_1 = wx.Panel(self.v_splitter, -1)
-        
+
         self.add_collection_win = AddCollectionWin(self)
 
         # Menu Bar
@@ -60,13 +60,16 @@ class LinSnap(wx.Frame):
         # Tool Bar
         self.lin_snap_frame_toolbar = wx.ToolBar(self, -1)
         self.SetToolBar(self.lin_snap_frame_toolbar)
+        self._BuildToolbar()
         # Tool Bar end
         self.collection_list = wx.ListCtrl(self.v_splitter_pane_1, -1, style=wx.LC_LIST|wx.SUNKEN_BORDER)
         self._PopulateCollectionList()
 
-        self.add_collection_bt = wx.Button(self.v_splitter_pane_1, -1, "Add Collection")
+        self.add_collection_bt = wx.Button(self.v_splitter_pane_1, -1, "Add a Collection")
+        self.remove_collection_bt = wx.Button(self.v_splitter_pane_1, -1, "Remove Collection")
 
-        self.thumbnail_view = ThumbnailView(self.v_splitter_pane_2, -1)
+        self.thumbnail_view = ThumbnailView(self.v_splitter_pane_2)
+
         
         self.__set_properties()
         self.__do_event_bindings()
@@ -75,6 +78,7 @@ class LinSnap(wx.Frame):
 
     def __do_event_bindings(self):
         self.add_collection_bt.Bind(wx.EVT_BUTTON, self.OnAddCollectionBt)
+        self.remove_collection_bt.Bind(wx.EVT_BUTTON, self.OnRemoveCollectionBt)
         self.collection_list.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnSelectCollection)
 
     def __set_properties(self):
@@ -96,6 +100,7 @@ class LinSnap(wx.Frame):
         left_sizer = wx.BoxSizer(wx.VERTICAL)
         left_sizer.Add(self.collection_list, 1, wx.EXPAND, 0)
         left_sizer.Add(self.add_collection_bt, 0, wx.EXPAND, 0)
+        left_sizer.Add(self.remove_collection_bt, 0, wx.EXPAND, 0)
         self.v_splitter_pane_1.SetSizer(left_sizer)
         right_sizer.Add(self.thumbnail_view, 1, wx.EXPAND, 0)
         self.v_splitter_pane_2.SetSizer(right_sizer)
@@ -125,9 +130,20 @@ class LinSnap(wx.Frame):
     def OnAddCollectionBt(self, event):
         self.add_collection_win.Show()
 
+    def OnRemoveCollectionBt(self, event):
+        index = self.collection_list.GetFocusedItem()
+        if index != -1:
+            if wx.MessageDialog(None, "Are you sure you want to delete this collection? All information about it will be lost.", "Confirm!", wx.YES_NO | wx.ICON_QUESTION).ShowModal() == wx.ID_YES:
+                col_name = self.collection_list.GetItemText(index)
+                self.collections.RemoveCollection(col_name)
+                self.collection_list.DeleteItem(index)
+                self.thumbnail_view.scroll_ctrl.Clear()
+
     def OnSelectCollection(self, event):
-        col_name = self.collection_list.GetItemText(self.collection_list.GetFocusedItem())
-        self.thumbnail_view.ShowDir(self.collections.GetCollection(col_name).dir)
+        index = self.collection_list.GetFocusedItem()
+        if index != -1:
+            col_name = self.collection_list.GetItemText(index)
+            self.thumbnail_view.scroll_ctrl.ShowDir(self.collections.GetCollection(col_name).dir)
 
     def _PopulateCollectionList(self):
         # add existing collections to the list
@@ -135,6 +151,8 @@ class LinSnap(wx.Frame):
         for item in self.collections.collections:
             self.collection_list.InsertStringItem(0, item)
         
+    def _BuildToolbar(self):
+        pass
 
 
 # end of class LinSnap

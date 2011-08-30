@@ -40,6 +40,7 @@ class CollectionManager():
 #        self.CheckForNewFiles()
 
     def SetName(self, new_name):
+        # update the xml file with the new name
         iterator = self.elem_tree.iter("Collection")
         self.name = new_name
         for col in iterator:
@@ -47,6 +48,7 @@ class CollectionManager():
         self.SaveTree()
 
     def SetDir(self, new_dir):
+        # update the xml file with the new dir
         iterator = self.elem_tree.iter("Collection")
         self.dir = new_dir
         for col in iterator:
@@ -54,9 +56,6 @@ class CollectionManager():
         self.SaveTree()
 
     def SaveTree(self):
-        # iterator = self.elem_tree.iter("Collection")
-        # for col in iterator:
-        #     col.set("path", self.dir)
         self.elem_tree.write(self.collection_file, "utf-8")
 
     def CreateElement(self, attrs):
@@ -108,7 +107,7 @@ class CollectionManager():
         for e in iterator:
             if e.get("name") == name:
                 new_collection.AddElement(e)
-                self.rename(e.get("path"), os.join(new_collection.dir, elem.get("name")))
+                os.rename(e.get("path"), os.join(new_collection.dir, elem.get("name")))
                 self.elem_tree.getroot().remove(e)
                 self.SaveTree()
 

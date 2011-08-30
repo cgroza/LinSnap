@@ -16,18 +16,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
+import wx
 from wx.lib.agw.thumbnailctrl import *
 
 class ThumbnailView(ThumbnailCtrl):
     """
     This class manages the thumbnail display and related events and functions.
     """
-    def __init__(self, parent, id):
+    def __init__(self, parent, id = -1):
         self.parent = parent
         ThumbnailCtrl.__init__(self, self.parent, id, (-1, -1), (-1, -1),
                                    THUMB_OUTLINE_RECT, THUMB_FILTER_IMAGES, PILImageHandler)
 
+        self.scroll_ctrl = self._scrolled
+        
 
     def OnThumbClick(self, event):
         pass

@@ -97,6 +97,9 @@ class CollectionDatabase():
     def RenameCollection(self, collection_name, new_collection_name):
         collection = self.collections[collection_name]
         collection.SetName(new_collection_name)
+        new_collection_file = os.join(self.collections_dir, new_collection_file)
+        os.rename(collection.collection_file, new_collection_file)
+        collection.collection_file = new_collection_file
         del self.collections[collection_name]
         self.collections[new_collection_name] = collection
         self._WriteCollectionsFile()

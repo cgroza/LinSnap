@@ -85,6 +85,7 @@ class AddCollectionWin(wx.Frame):
         self.parent.collections.CreateCollection(collection_name, self.collection_dir_picker.GetPath())
         self.parent.collection_list.InsertStringItem(0, collection_name)
         self.collection_txt.Clear()
+        self.parent.screen_grabber_win.SetCollectionList(self.parent.collections.collections.keys())
         self.Hide()
 
 

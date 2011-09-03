@@ -20,7 +20,7 @@
 import wx
 import os
 import wx.lib.agw.thumbnailctrl
-import ScreenGrabber
+from ScreenGrabber import *
 from ThumbnailView import *
 from CollectionDatabase import *
 from AddCollectionWin import *
@@ -50,6 +50,7 @@ class LinSnap(wx.Frame):
         self.v_splitter_pane_1 = wx.Panel(self.v_splitter, -1)
 
         self.add_collection_win = AddCollectionWin(self)
+        self.screen_grabber_win = SreenGrabberWindow(self.collections, parent = self)
 
         # Menu Bar
         self.lin_snap_frame_menubar = wx.MenuBar()
@@ -130,6 +131,7 @@ class LinSnap(wx.Frame):
     def OnAddCollectionBt(self, event):
         self.add_collection_win.Show()
 
+
     def OnRemoveCollectionBt(self, event):
         index = self.collection_list.GetFocusedItem()
         if index != -1:
@@ -138,6 +140,7 @@ class LinSnap(wx.Frame):
                 self.collections.RemoveCollection(col_name)
                 self.collection_list.DeleteItem(index)
                 self.thumbnail_view.scroll_ctrl.Clear()
+                self.screen_grabber_win.SetCollectionList(self.collections.collections.keys())
 
     def OnSelectCollection(self, event):
         index = self.collection_list.GetFocusedItem()

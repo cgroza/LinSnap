@@ -32,7 +32,7 @@ class SreenGrabberWindow(wx.Frame):
         self.collection_db = collection_db
         self.top_panel = wx.Panel(self, -1)
         self.save_label = wx.StaticText(self.top_panel, -1, "Pick a colection to save the screenshot in:")
-        self.choice_collection = wx.Choice(self.top_panel, -1, choices=[])
+        self.choice_collection = wx.Choice(self.top_panel, -1, choices= collection_db.collections.keys())
         self.filename_label = wx.StaticText(self.top_panel, -1, "Screenshot file name:")
         self.filename_text = wx.TextCtrl(self.top_panel, -1, "")
         self.scrn_opt_label = wx.StaticText(self.top_panel, -1, "Screenshot options:")
@@ -91,6 +91,9 @@ class SreenGrabberWindow(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.bt_take_scrn.Bind(wx.EVT_BUTTON, self.OnTakeScreenshot)
         self.bt_cancel.Bind(wx.EVT_BUTTON, self.OnClose)
+
+    def SetCollectionList(self, collections):
+        self.choice_collection.SetItems(collections)
 
     def GetRectSelection(self):
         pass

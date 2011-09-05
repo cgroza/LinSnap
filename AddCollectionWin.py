@@ -60,6 +60,7 @@ class AddCollectionWin(wx.Frame):
         v_sizer.Add(collection_dir_sz, 0, wx.ALL|wx.EXPAND, 0)
         v_sizer.Add((20, 30), 0, 0, 0)
         bt_h_sizer.Add(self.add_collection_bt, 0, wx.ALL|wx.EXPAND, 0)
+        bt_h_sizer.AddSpacer(5)
         bt_h_sizer.Add(self.cancel_bt, 0, wx.ALL|wx.EXPAND, 0)
         v_sizer.Add(bt_h_sizer, 0, wx.RIGHT|wx.ALIGN_RIGHT, 0)
         self.top_panel.SetSizer(v_sizer)

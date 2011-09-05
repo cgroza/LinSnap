@@ -98,22 +98,26 @@ class SreenGrabberWindow(wx.Frame):
     def GetRectSelection(self):
         pass
 
-    def OnTakeScreenshot(self, take):
-        collection_name = ""    # TODO
+    def OnTakeScreenshot(self, event):
+        collection_name = self.choice_collection.GetStringSelection()
         scrn_filename = self.filename_text.GetValue()
         scrn_rect = self.GetRectSelection()
 
-        if scrn_filename:
-            selected_col = self.collection_db.GetCollection(collection_name)
-            scrn_shot_bmp = ScreenGrabber.TakeScreenShot(scrn_rect)
-            scrn_img = scrn_shot_bmp.ToImage()
-            path = os.path.join(selected_col.dir, scrn_filename)
-            scrn_img.Save(path)
-            elem_attrs = { "tags" : "", "name" : scrn_filename, "path" : path }
-            selected_col.CreateElement(elem_attrs)
-        else:
-            wx.MessageDialog(None, "Invalid file name. Please choose a valid file name.", "Error", wx.OK | wx.ICON_ERROR).ShowModal()
+        if not collection_name:
+            wx.MessageDialog(None, "No collection selected. Please choose a collection.", "Error", wx.OK | wx.ICON_ERROR).ShowModal()
+            return
 
+        selected_col = self.collection_db.GetCollection(collection_name)
+        if not scrn_filename or not selected_col.FindElement(scrn_filename):
+            wx.MessageDialog(None, "Invalid file name. File name is empty or already exists.", "Error", wx.OK | wx.ICON_ERROR).ShowModal()
+            return
+
+        scrn_shot_bmp = ScreenGrabber.TakeScreenShot(scrn_rect)
+        scrn_img = scrn_shot_bmp.ToImage()
+        path = os.path.join(selected_col.dir, scrn_filename)
+        scrn_img.Save(path)
+        elem_attrs = { "tags" : "", "name" : scrn_filename, "path" : path }
+        selected_col.CreateElement(elem_attrs)
 
     def OnClose(self, event):
         self.filename_text.Clear()

@@ -51,7 +51,7 @@ class LinSnap(wx.Frame):
 
         self.add_collection_win = AddCollectionWin(self)
         self.screen_grabber_win = SreenGrabberWindow(self.collections, parent = self)
-
+        # self.screen_grabber_win.Show()
         # Menu Bar
         self.lin_snap_frame_menubar = wx.MenuBar()
         self.SetMenuBar(self.lin_snap_frame_menubar)

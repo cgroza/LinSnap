@@ -13,7 +13,9 @@ class AddCollectionWin(wx.Frame):
     def __init__(self, parent, id = -1):
         # begin wxGlade: AddCollectionWin.__init__
         self.parent = parent
-        wx.Frame.__init__(self, self.parent, id)
+        wx.Frame.__init__(self, self.parent, id, style = wx.MINIMIZE_BOX | wx.MAXIMIZE_BOX |
+                          wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
+
         self.top_panel = wx.Panel(self)
         self.collection_name_label = wx.StaticText(self.top_panel, -1, "New collection name: ")
         self.collection_txt = wx.TextCtrl(self.top_panel, -1, "")

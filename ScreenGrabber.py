@@ -25,10 +25,11 @@ import CollectionDatabase
 
 
 class SreenGrabberWindow(wx.Frame):
-    def __init__(self, collection_db, *args, **kwds):
+    def __init__(self, collection_db, parent, id = -1):
         # begin wxGlade: SreenGrabberWindow.__init__
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE
-        wx.Frame.__init__(self, *args, **kwds)
+        wx.Frame.__init__(self, parent , id, style = wx.MINIMIZE_BOX | wx.MAXIMIZE_BOX |
+                          wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
+
         self.collection_db = collection_db
         self.top_panel = wx.Panel(self, -1)
         self.save_label = wx.StaticText(self.top_panel, -1, "Pick a colection to save the screenshot in:")
@@ -118,6 +119,7 @@ class SreenGrabberWindow(wx.Frame):
         scrn_img.Save(path)
         elem_attrs = { "tags" : "", "name" : scrn_filename, "path" : path }
         selected_col.CreateElement(elem_attrs)
+        self.parent.thumbnail_view.scroll_ctrl.UpdateShow()
 
     def OnClose(self, event):
         self.filename_text.Clear()
@@ -168,7 +170,7 @@ class ScreenGrabber():
 if __name__ == "__main__":
     app = wx.PySimpleApp(0)
     wx.InitAllImageHandlers()
-    scrn_grabber_win = SreenGrabberWindow(None, None, -1, "")
+    scrn_grabber_win = SreenGrabberWindow(None, None, -1)
     app.SetTopWindow(scrn_grabber_win)
     scrn_grabber_win.Show()
     app.MainLoop()

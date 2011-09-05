@@ -29,7 +29,17 @@ class ThumbnailView(ThumbnailCtrl):
                                    THUMB_OUTLINE_RECT, THUMB_FILTER_IMAGES, PILImageHandler)
 
         self.scroll_ctrl = self._scrolled
-        
+        # Creote popup menu, this menu will appear when the user will click on a thumbnail
+        self.popup_menu = wx.Menu()
+        # Add popup menu elements
+        self.popup_menu.Append(1000, "View", "Open a preview of the selected thumbnail.")
+        self.popup_menu.Append(1005, "Rename", "Rename the selected thumbnail.")
+        self.popup_menu.Append(1010, "Delete", "Delete the selected thumbnail. The real file is deleted also.")
+        self.popup_menu.Append(1015, "Move", "Move the selected thumbnail to antother collection.")
+        self.popup_menu.Append(1020, "Upload", "Upload the thumbnail to a web service.")
+        self.popup_menu.Append(1025, "Edit Tags", "Edit the tags of the selected thumbnail.")
+
+        self.scroll_ctrl.SetPopupMenu(self.popup_menu)
 
     def OnThumbClick(self, event):
         pass

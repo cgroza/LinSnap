@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 export EDITOR=leafpad
+./clean.sh
 git add .
 git checkout devel
 git commit -a

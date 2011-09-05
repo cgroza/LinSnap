@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-
+export EDITOR=leafpad
 git add .
 git checkout devel
 git commit -a

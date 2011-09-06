@@ -14,10 +14,10 @@ class UploadWin(wx.Frame):
 
     def __init__(self, *args, **kwds):
         # begin wxGlade: UploadWin.__init__
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        kwds["style"] = wx.MINIMIZE_BOX | wx.MAXIMIZE_BOX | wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN
         wx.Frame.__init__(self, *args, **kwds)
-        AUTH_FILE = os.path.join(os.expanduser("~"), ".LinSnap", "auth.conf")
-        self.uploader = Uploader(self._ReadAuthFile(AUTH_FILE))
+        AUTH_FILE = os.path.join(os.path.expanduser("~"), ".LinSnap", "auth.conf")
+        self.files = []
         self.main_panel = wx.Panel(self, -1)
         self.auth_label = wx.StaticText(self.main_panel, -1, "Authentification Details:")
         self.user_label = wx.StaticText(self.main_panel, -1, "Username:")
@@ -29,6 +29,7 @@ class UploadWin(wx.Frame):
         self.cancel_bt = wx.Button(self.main_panel, -1, "Cancel")
 
         self.__set_properties()
+        self.__do_event_bindings()
         self.__do_layout()
         # end wxGlade
 
@@ -67,8 +68,9 @@ class UploadWin(wx.Frame):
         control_sizer.Add(auth_sizer, 1, wx.ALL|wx.EXPAND, 0)
         control_sizer.Add(self.service_box, 0, wx.ALL|wx.EXPAND, 0)
         bt_sz.Add(self.upload_bt, 0, 0, 0)
+        bt_sz.AddSpacer(5)
         bt_sz.Add(self.cancel_bt, 0, 0, 0)
-        control_sizer.Add(bt_sz, 1, wx.ALL|wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM, 2)
+        control_sizer.Add(bt_sz, 0, wx.ALL|wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM, 0)
         self.main_panel.SetSizer(control_sizer)
         main_sizer.Add(self.main_panel, 1, wx.ALL|wx.EXPAND, 0)
         self.SetSizer(main_sizer)
@@ -78,8 +80,12 @@ class UploadWin(wx.Frame):
     def OnClose(self, event):
         self.Hide()
 
+    def SetUploadFiles(self, files):
+        self.files = files
+    
     def OnUpload(self, event):
-        pass
+        uploader = Uploader(self._ReadAuthFile(AUTH_FILE))
+        uploader.Upload(self.files, self.service_box.GetStringSelection())
 
     def OnRadioBoxSelect(self, event):
         pass
@@ -106,7 +112,17 @@ class Uploader:
     def __init__(self, auth_dict):
         self.__action_dict = { "Ubuntu One": self.UploadToUbuntuOne, "CloudApp": self.UploadToCloudApp}
         self.__auth_dict = auth_dict
-        
+        self.cloud_api = None
+        self.ubuntu_one_api = None
+        if auth_dict["CloudApp"]["username"]:
+            self.cloud_api = cloud.Cloud()
+            self.cloud_api.auth(auth_dict["CloudApp"]["username"],auth_dict["CloudApp"]["password"])
+
+        # if auth_dict["Ubuntu One"]["username"]:
+        #     self.cloud_api = cloud.Cloud()
+        #     self.cloud_api.auth(auth_dict["Ubuntu One"]["username"],auth_dict["Ubuntu One"]["password"])
+
+
     def SetAuthDict(self, auth_dict):
         self.__auth_dict = auth_dict
 
@@ -114,7 +130,10 @@ class Uploader:
         return self.__action_dict[service](auth_dict, files)
 
     def _UploadToCloudApp(self, files):
-        return True
+        for f in files:
+            if not self.cloud_api.upload_file(f):
+                pass
+    
     
     def _UploadToUbuntuOne(self, files ):
         return True

@@ -23,8 +23,9 @@ class ThumbnailView(ThumbnailCtrl):
     """
     This class manages the thumbnail display and related events and functions.
     """
-    def __init__(self, parent, id = -1):
+    def __init__(self, parent, app_instance, id):
         self.parent = parent
+        self.app_instance = app_instance
         ThumbnailCtrl.__init__(self, self.parent, id, (-1, -1), (-1, -1),
                                    THUMB_OUTLINE_RECT, THUMB_FILTER_IMAGES, PILImageHandler)
 
@@ -39,7 +40,11 @@ class ThumbnailView(ThumbnailCtrl):
         self.popup_menu.Append(1020, "Upload", "Upload the thumbnail to a web service.")
         self.popup_menu.Append(1025, "Edit Tags", "Edit the tags of the selected thumbnail.")
 
+        self.Bind(wx.EVT_MENU, self.OnMenuUpload, id = 1020)
+
         self.scroll_ctrl.SetPopupMenu(self.popup_menu)
+
+
 
     def OnThumbClick(self, event):
         pass
@@ -47,3 +52,9 @@ class ThumbnailView(ThumbnailCtrl):
 
     def OnThumbDoubleClick(self, event):
         pass
+
+
+    def OnMenuUpload(self, event):
+        file_path = os.path.join(self.GetShowDir(), self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName())
+        self.app_instance.upload_win.SetUploadFiles([file_path])
+        self.app_instance.upload_win.Show()

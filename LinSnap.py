@@ -24,7 +24,7 @@ from ScreenGrabber import *
 from ThumbnailView import *
 from CollectionDatabase import *
 from AddCollectionWin import *
-
+from UploadWin import *
 # begin wxGlade: extracode
 # end wxGlade
 
@@ -51,7 +51,9 @@ class LinSnap(wx.Frame):
 
         self.add_collection_win = AddCollectionWin(self)
         self.screen_grabber_win = SreenGrabberWindow(self.collections, parent = self)
-        self.screen_grabber_win.Show()
+        # self.screen_grabber_win.Show()
+        self.upload_win = UploadWin(self)
+
         # Menu Bar
         self.lin_snap_frame_menubar = wx.MenuBar()
         self.SetMenuBar(self.lin_snap_frame_menubar)
@@ -69,7 +71,7 @@ class LinSnap(wx.Frame):
         self.add_collection_bt = wx.Button(self.v_splitter_pane_1, -1, "Add a Collection")
         self.remove_collection_bt = wx.Button(self.v_splitter_pane_1, -1, "Remove Collection")
 
-        self.thumbnail_view = ThumbnailView(self.v_splitter_pane_2)
+        self.thumbnail_view = ThumbnailView(self.v_splitter_pane_2, self, -1)
 
         
         self.__set_properties()

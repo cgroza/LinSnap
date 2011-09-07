@@ -40,7 +40,8 @@ class UploadWin(wx.Frame):
 
         self.upload_bt.Bind(wx.EVT_BUTTON, self.OnUpload)
         self.service_box.Bind(wx.EVT_RADIOBOX, self.OnRadioBoxSelect)
-        
+        self.Bind(wx.EVT_BUTTON, self._NotifyUser, id = self.GetId())
+
     def __set_properties(self):
         # begin wxGlade: UploadWin.__set_properties
         self.SetTitle("Upload")
@@ -87,12 +88,26 @@ class UploadWin(wx.Frame):
     def SetUploadFiles(self, files):
         self.files = files
     
+    def _NotifyUser(self, event):
+        wx.MessageDialog(None, "Upload complete.", "Uplaod Status", style = wx.ICON_INFORMATION).ShowModal()
+
+    def _OnDownloadComplete(self, file_info):
+        # we may not notify the user from this function because of the thread.
+        # we instead post a dummy event that will notify the frame which will call te _NotifyUser
+        cmd = wx.CommandEvent(wx.EVT_BUTTON.evtType[0], self.GetId())
+        cmd.SetEventObject(self)
+        cmd.SetId(self.GetId())
+        wx.PostEvent(self.GetEventHandler(), cmd)
+
+
     def OnUpload(self, event):
         self._SaveAuthInfo()
-        uploader = Uploader(self._ReadAuthFile())
-        if not uploader.Upload(self.files, self.service_box.GetStringSelection()):
-            wx.MessageDialog(None, "Upload unsuccessful. Please check authentification details.", style=wx.ICON_EXCLAMATION).ShowModal()
-
+        uploader = Uploader(self._ReadAuthFile(), self._OnDownloadComplete)
+        if uploader.auth_ok:
+            if not uploader.Upload(self.files, self.service_box.GetStringSelection()):
+                wx.MessageDialog(None, "Upload unsuccessful. Please check internet connection.", style=wx.ICON_EXCLAMATION).ShowModal()
+        else:
+            wx.MessageDialog(None, "Authentification unsuccessful. Please check authentification details.", style=wx.ICON_EXCLAMATION).ShowModal()
         
     def OnRadioBoxSelect(self, event):
         self.username_txt.SetValue(self.auth_dict[self.service_box.GetStringSelection()]["username"])
@@ -127,24 +142,32 @@ class UploadWin(wx.Frame):
 
 # end of class UploadWin
 class Uploader:
-    def __init__(self, auth_dict):
+    def __init__(self, auth_dict, callback):
         self.__action_dict = { "CloudApp": self._UploadToCloudApp}
         self.__auth_dict = auth_dict
-        self.cloud_api = None
+        self.callback = callback
+        self.auth_ok = True
 
-        self.cloud_api = cloud_api.CloudApi(self.__auth_dict["CloudApp"]["username"], self.__auth_dict["CloudApp"]["password"])
+        try:
+            self.cloud_api = cloud_api.CloudApi(self.__auth_dict["CloudApp"]["username"],
+                                                self.__auth_dict["CloudApp"]["password"])
+        except:
+            self.auth_ok = False
 
 
     def SetAuthDict(self, auth_dict):
         self.__auth_dict = auth_dict
+        self.callback = callback
 
-    def Upload(self, files , service = "CloudApp"):
+    def Upload(self, files , service = "CloudApp" ):
         return self.__action_dict[service](files)
 
     def _UploadToCloudApp(self, files):
-        for f in files:
-            if not self.cloud_api.uploadFile(f):
-                pass
+        try:
+            for f in files:
+                self.cloud_api.uploadFile(f, self.callback)
+        except:
+            return False
         return True
 
 if __name__ == "__main__":

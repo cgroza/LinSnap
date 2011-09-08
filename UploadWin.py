@@ -94,10 +94,11 @@ class UploadWin(wx.Frame):
     def _OnDownloadComplete(self, file_info):
         # we may not notify the user from this function because of the thread.
         # we instead post a dummy event that will notify the frame which will call te _NotifyUser
-        cmd = wx.CommandEvent(wx.EVT_BUTTON.evtType[0], self.GetId())
-        cmd.SetEventObject(self)
-        cmd.SetId(self.GetId())
-        wx.PostEvent(self.GetEventHandler(), cmd)
+        if file_info["name"] == os.path.split(self.files[-1])[-1]:
+            cmd = wx.CommandEvent(wx.EVT_BUTTON.evtType[0], self.GetId())
+            cmd.SetEventObject(self)
+            cmd.SetId(self.GetId())
+            wx.PostEvent(self.GetEventHandler(), cmd)
 
 
     def OnUpload(self, event):

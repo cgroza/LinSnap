@@ -58,3 +58,19 @@ class ThumbnailView(ThumbnailCtrl):
         file_path = os.path.join(self.GetShowDir(), self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName())
         self.app_instance.upload_win.SetUploadFiles([file_path])
         self.app_instance.upload_win.Show()
+
+    def OnMenuRename(self, event):
+        item_name = self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName()
+
+    def OnMenuDelete(self, event):
+        item_name = self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName()
+
+    def OnMenuMove(self, event):
+        item_name =  self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName()
+
+    def OnMenuEditTags(self, event):
+        item_name = self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName()
+
+    def _GetCurrentCollection(self):
+        collection_name = self.app_instance.collection_list.GetItemText(self.app_instance.collection_list.GetFocusedItem())
+        return self.app_instance.collections.GetCollection(collection_name)

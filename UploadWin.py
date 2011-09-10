@@ -20,6 +20,8 @@ class UploadWin(wx.Frame):
         self.auth_dict = self._ReadAuthFile()
         self.files = []
         self.main_panel = wx.Panel(self, -1)
+        self.upload_label = wx.StaticText(self.main_panel, -1, "Upload:")
+        self.upload_choice = wx.Choice(self.main_panel, -1, choices = ["Selected File", "Selected Collection"])
         self.auth_label = wx.StaticText(self.main_panel, -1, "Authentification Details:")
         self.user_label = wx.StaticText(self.main_panel, -1, "Username:")
         self.username_txt = wx.TextCtrl(self.main_panel, -1, "")
@@ -41,7 +43,7 @@ class UploadWin(wx.Frame):
         self.upload_bt.Bind(wx.EVT_BUTTON, self.OnUpload)
         self.service_box.Bind(wx.EVT_RADIOBOX, self.OnRadioBoxSelect)
         self.Bind(wx.EVT_BUTTON, self._NotifyUser, id = self.GetId())
-
+        self.upload_choice.Bind(wx.EVT_CHOICE, self._OnChoiceUpload)
     def __set_properties(self):
         # begin wxGlade: UploadWin.__set_properties
         self.SetTitle("Upload")
@@ -61,6 +63,8 @@ class UploadWin(wx.Frame):
         passwd_sz = wx.BoxSizer(wx.VERTICAL)
         usrnm_sizer = wx.BoxSizer(wx.HORIZONTAL)
         txt_ctrl_sz = wx.BoxSizer(wx.VERTICAL)
+        control_sizer.Add(self.upload_label, 0, wx.EXPAND, 0)
+        control_sizer.Add(self.upload_choice, 0, wx.EXPAND, 0)
         control_sizer.Add(self.auth_label, 0, wx.EXPAND, 0)
         usrnm_sizer.Add(self.user_label, 0, wx.ALL, 0)
         txt_ctrl_sz.Add(self.username_txt, 0, wx.ALL|wx.EXPAND, 0)
@@ -115,6 +119,17 @@ class UploadWin(wx.Frame):
     def OnRadioBoxSelect(self, event):
         self.username_txt.SetValue(self.auth_dict[self.service_box.GetStringSelection()]["username"])
         self.password_txt.SetValue(self.auth_dict[self.service_box.GetStringSelection()]["password"])
+
+    def _OnChoiceUpload(self, event):
+        selection = self.upload_choice.GetStringSelection()
+        parent = self.GetParent()
+        thumb_view = parent.thumbnail_view
+        if selection == "Selected File":
+            self.files = [os.path.join(thumb_view.GetShowDir(), thumb_view.scroll_ctrl.GetItem(thumb_view.scroll_ctrl.GetSelection()).GetFileName())]
+        elif selection == "Selected Collection":
+            index = parent.collection_list.GetFocusedItem()
+            if index != -1:
+                self.files = parent.collections.GetCollection(parent.collection_list.GetItemText(index)).GetFilePaths()
 
     def _ReadAuthFile(self):
         """

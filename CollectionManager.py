@@ -134,3 +134,7 @@ class CollectionManager():
                 self.elem_tree.getroot().remove(e)
 
 
+    def GetFilePaths(self):
+        iterator = self.elem_tree.iter("Element")
+        return [e.get("name") for e in iterator]
+

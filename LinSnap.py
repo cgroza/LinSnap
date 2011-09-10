@@ -80,6 +80,7 @@ class LinSnap(wx.Frame):
         self.collection_list.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnSelectCollection)
         self.Bind(wx.EVT_TOOL, self.OnAddCollection, id = 2000)
         self.Bind(wx.EVT_TOOL, self.OnRemoveCollection, id = 2005)
+        self.Bind(wx.EVT_TOOL, self.OnUpload, id = 2030)
 
     def __set_properties(self):
         # begin wxGlade: LinSnap.__set_properties
@@ -158,6 +159,12 @@ class LinSnap(wx.Frame):
                 self.collection_list.DeleteItem(index)
                 self.thumbnail_view.scroll_ctrl.Clear()
                 self.screen_grabber_win.SetCollectionList(self.collections.collections.keys())
+
+    def OnUpload(self, event):
+        self.upload_win.SetSelection(0)
+        self.upload_win.Show()
+
+
 
     def OnSelectCollection(self, event):
         index = self.collection_list.GetFocusedItem()

@@ -63,13 +63,10 @@ class LinSnap(wx.Frame):
         # Tool Bar
         self.lin_snap_frame_toolbar = wx.ToolBar(self, -1)
         self.SetToolBar(self.lin_snap_frame_toolbar)
-        self._BuildToolbar()
+        self.__build_toolbar()
         # Tool Bar end
         self.collection_list = wx.ListCtrl(self.v_splitter_pane_1, -1, style=wx.LC_LIST|wx.SUNKEN_BORDER)
         self._PopulateCollectionList()
-
-        self.add_collection_bt = wx.Button(self.v_splitter_pane_1, -1, "Add a Collection")
-        self.remove_collection_bt = wx.Button(self.v_splitter_pane_1, -1, "Remove Collection")
 
         self.thumbnail_view = ThumbnailView(self.v_splitter_pane_2, self, -1)
 
@@ -80,9 +77,9 @@ class LinSnap(wx.Frame):
         # end wxGlade
 
     def __do_event_bindings(self):
-        self.add_collection_bt.Bind(wx.EVT_BUTTON, self.OnAddCollectionBt)
-        self.remove_collection_bt.Bind(wx.EVT_BUTTON, self.OnRemoveCollectionBt)
         self.collection_list.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnSelectCollection)
+        self.Bind(wx.EVT_TOOL, self.OnAddCollection, id = 2000)
+        self.Bind(wx.EVT_TOOL, self.OnRemoveCollection, id = 2005)
 
     def __set_properties(self):
         # begin wxGlade: LinSnap.__set_properties
@@ -102,8 +99,6 @@ class LinSnap(wx.Frame):
         right_sizer = wx.BoxSizer(wx.HORIZONTAL)
         left_sizer = wx.BoxSizer(wx.VERTICAL)
         left_sizer.Add(self.collection_list, 1, wx.EXPAND, 0)
-        left_sizer.Add(self.add_collection_bt, 0, wx.EXPAND, 0)
-        left_sizer.Add(self.remove_collection_bt, 0, wx.EXPAND, 0)
         self.v_splitter_pane_1.SetSizer(left_sizer)
         right_sizer.Add(self.thumbnail_view, 1, wx.EXPAND, 0)
         self.v_splitter_pane_2.SetSizer(right_sizer)
@@ -114,6 +109,26 @@ class LinSnap(wx.Frame):
         self.v_splitter.SetSashPosition(200)
         self.Centre()
         # end wxGlade
+
+    def __build_toolbar(self):
+        icon_add_collection = wx.Image('icons/icon-add_collection.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+        icon_remove_collection = wx.Image('icons/icon-remove_collection.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+        icon_rename_collection = wx.Image('icons/icon-rename_collection.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+        icon_cloudapp = wx.Image('icons/icon-cloudapp.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+        icon_delete_screenshot = wx.Image('icons/icon-delete_screenshot.png' , wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+        icon_move_screenshot = wx.Image('icons/icon-move_screenshot.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+        icon_rename_screenshot = wx.Image('icons/icon-rename_screenshot.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+        icon_take_screenshot = wx.Image('icons/icon-take_screenshot.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+
+
+        self.lin_snap_frame_toolbar.AddSimpleTool(2000, icon_add_collection, "Add Collection", "Adds and indexes a new collection.")
+        self.lin_snap_frame_toolbar.AddSimpleTool(2005, icon_remove_collection, "Remove Collection", "Removes the selected collection.")
+        self.lin_snap_frame_toolbar.AddSimpleTool(2010, icon_rename_collection, "Rename Collection", "Renames the selected collection.")
+        self.lin_snap_frame_toolbar.AddSimpleTool(2015, icon_take_screenshot, "Take Screenshot", "Takes a screenshot of the screen.")
+        self.lin_snap_frame_toolbar.AddSimpleTool(2020, icon_move_screenshot, "Move Screenshot", "Moves the selected screenshot into another collection.")
+        self.lin_snap_frame_toolbar.AddSimpleTool(2025, icon_rename_screenshot, "Rename Screenshot", "Renames the selected screenshot to a different name.")
+        self.lin_snap_frame_toolbar.AddSimpleTool(2030, icon_cloudapp, "Upload", "Uploads a collection or screenshot.")
+
 
     def _CfgFilesExist(self):
         if os.path.exists(os.path.join(self.CFG_DIR)):
@@ -130,11 +145,11 @@ class LinSnap(wx.Frame):
             with open(self.CFG_DIR_FILE, "w") as cfg_file:
                 cfg_file.write("")
             
-    def OnAddCollectionBt(self, event):
+    def OnAddCollection(self, event):
         self.add_collection_win.Show()
 
 
-    def OnRemoveCollectionBt(self, event):
+    def OnRemoveCollection(self, event):
         index = self.collection_list.GetFocusedItem()
         if index != -1:
             if wx.MessageDialog(None, "Are you sure you want to delete this collection? All information about it will be lost.", "Confirm!", wx.YES_NO | wx.ICON_QUESTION).ShowModal() == wx.ID_YES:
@@ -156,17 +171,17 @@ class LinSnap(wx.Frame):
         for item in self.collections.collections:
             self.collection_list.InsertStringItem(0, item)
         
-    def _BuildToolbar(self):
-        pass
-
 
 # end of class LinSnap
 
-
-if __name__ == "__main__":
+def main():
     app = wx.PySimpleApp(0)
     wx.InitAllImageHandlers()
     lin_snap_frame = LinSnap(None, -1, "")
     app.SetTopWindow(lin_snap_frame)
     lin_snap_frame.Show()
     app.MainLoop()
+
+if __name__ == "__main__":
+    main()
+

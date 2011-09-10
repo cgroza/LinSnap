@@ -149,7 +149,6 @@ class LinSnap(wx.Frame):
     def OnAddCollection(self, event):
         self.add_collection_win.Show()
 
-
     def OnRemoveCollection(self, event):
         index = self.collection_list.GetFocusedItem()
         if index != -1:
@@ -164,7 +163,23 @@ class LinSnap(wx.Frame):
         self.upload_win.SetSelection(0)
         self.upload_win.Show()
 
+    def OnRenameCollection(self, event):
+        pass
 
+    def OnRemoveCollection(self, event):
+        pass
+
+    def OnDeleteScreenshot(self, event):
+        pass
+
+    def OnMoveScreenshot(self, event):
+        pass
+
+    def OnRenameScreenshot(self, event):
+        pass
+
+    def OnTakeScreenshot(self, event):
+        pass
 
     def OnSelectCollection(self, event):
         index = self.collection_list.GetFocusedItem()

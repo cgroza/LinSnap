@@ -88,6 +88,7 @@ class UploadWin(wx.Frame):
 
     def OnClose(self, event):
         self.Hide()
+        self.upload_choice.SetSelection(0)
 
     def SetUploadFiles(self, files):
         self.files = files

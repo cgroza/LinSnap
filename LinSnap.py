@@ -80,6 +80,7 @@ class LinSnap(wx.Frame):
         self.collection_list.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnSelectCollection)
         self.Bind(wx.EVT_TOOL, self.OnAddCollection, id = 2000)
         self.Bind(wx.EVT_TOOL, self.OnRemoveCollection, id = 2005)
+        self.Bind(wx.EVT_TOOL, self.OnRenameCollection, id = 2010)
         self.Bind(wx.EVT_TOOL, self.OnUpload, id = 2030)
 
     def __set_properties(self):
@@ -150,12 +151,11 @@ class LinSnap(wx.Frame):
         self.add_collection_win.Show()
 
     def OnRemoveCollection(self, event):
-        index = self.collection_list.GetFocusedItem()
-        if index != -1:
-            if wx.MessageDialog(None, "Are you sure you want to delete this collection? All information about it will be lost.", "Confirm!", wx.YES_NO | wx.ICON_QUESTION).ShowModal() == wx.ID_YES:
-                col_name = self.collection_list.GetItemText(index)
+        col_name = self.GetSelectedCollection()
+        if col_name:
+            if wx.MessageDialog(None, "Are you sure you want to delete "+col_name+"?\n", "Are you sure?", style = wx.YES_NO | wx.ICON_QUESTION).ShowModal() == wx.ID_YES:
                 self.collections.RemoveCollection(col_name)
-                self.collection_list.DeleteItem(index)
+                self.collection_list.DeleteItem(self.collection_list.GetFocusedItem())
                 self.thumbnail_view.scroll_ctrl.Clear()
                 self.screen_grabber_win.SetCollectionList(self.collections.collections.keys())
 
@@ -164,11 +164,17 @@ class LinSnap(wx.Frame):
         self.upload_win.Show()
 
     def OnRenameCollection(self, event):
-        pass
-
-    def OnRemoveCollection(self, event):
-        pass
-
+        col_name = self.GetSelectedCollection()
+        dlg = wx.TextEntryDialog(None, "Rename collection to: ", "Rename Collection")
+        resp = dlg.ShowModal()
+        if resp == wx.ID_OK:
+            new_col_name = dlg.GetValue()
+            if new_col_name and new_col_name not in self.collections.collections:
+                self.collections.RenameCollection(col_name, new_col_name)
+                self.collection_list.SetItemText(self.collection_list.GetFocusedItem(), new_col_name)
+            else:
+                wx.MessageDialog(None, "Invalid collection name. Name already exists or empty.", "Name Error", wx.ICON_EXCLAMATION).ShowModal()
+        
     def OnDeleteScreenshot(self, event):
         pass
 
@@ -182,9 +188,8 @@ class LinSnap(wx.Frame):
         pass
 
     def OnSelectCollection(self, event):
-        index = self.collection_list.GetFocusedItem()
-        if index != -1:
-            col_name = self.collection_list.GetItemText(index)
+        col_name = self.GetSelectedCollection()
+        if col_name:
             self.thumbnail_view.scroll_ctrl.ShowDir(self.collections.GetCollection(col_name).dir)
 
     def _PopulateCollectionList(self):
@@ -192,6 +197,11 @@ class LinSnap(wx.Frame):
         self.collection_list.ClearAll()
         for item in self.collections.collections:
             self.collection_list.InsertStringItem(0, item)
+
+    def GetSelectedCollection(self):
+        index = self.collection_list.GetFocusedItem()
+        if index != -1:
+            return self.collection_list.GetItemText(index)
         
 
 # end of class LinSnap

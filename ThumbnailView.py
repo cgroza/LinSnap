@@ -75,3 +75,8 @@ class ThumbnailView(ThumbnailCtrl):
     def _GetCurrentCollection(self):
         collection_name = self.app_instance.collection_list.GetItemText(self.app_instance.collection_list.GetFocusedItem())
         return self.app_instance.collections.GetCollection(collection_name)
+
+    def GetSelectedScrnName(self):
+        index = self.scroll_ctrl.GetSelection()
+        if index > -1:
+            return self.scroll_ctrl.GetItem(index).GetFileName()

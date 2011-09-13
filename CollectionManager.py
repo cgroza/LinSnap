@@ -97,9 +97,9 @@ class CollectionManager():
         for e in iterator:
             if e.get("name") == name:
                 e.set("name", new_name)
-                new_path = os.join(os.split(e.get("path"))[0], new_name)
+                new_path = os.path.join(os.path.split(e.get("path"))[0], new_name)
                 os.rename(e.get("path"), new_path)
-                e.set("path", path) 
+                e.set("path", new_path) 
                 self.SaveTree()
 
     def MoveElement(self, elem, new_collection):

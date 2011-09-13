@@ -81,7 +81,9 @@ class LinSnap(wx.Frame):
         self.Bind(wx.EVT_TOOL, self.OnAddCollection, id = 2000)
         self.Bind(wx.EVT_TOOL, self.OnRemoveCollection, id = 2005)
         self.Bind(wx.EVT_TOOL, self.OnRenameCollection, id = 2010)
+        self.Bind(wx.EVT_TOOL, self.OnRenameScreenshot, id = 2025)
         self.Bind(wx.EVT_TOOL, self.OnUpload, id = 2030)
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
     def __set_properties(self):
         # begin wxGlade: LinSnap.__set_properties
@@ -182,7 +184,20 @@ class LinSnap(wx.Frame):
         pass
 
     def OnRenameScreenshot(self, event):
-        pass
+        scrn_name = self.thumbnail_view.GetSelectedScrnName()
+        col_name = self.GetSelectedCollection()
+        if scrn_name and col_name:
+            dlg = wx.TextEntryDialog(None, "Rename screenshot to: ", "Rename Screenshot")
+            resp = dlg.ShowModal()
+            if resp == wx.ID_OK:
+                new_scrn_name = dlg.GetValue()
+                collection = self.collections.GetCollection(col_name)
+                if new_scrn_name and collection:
+                    collection.RenameElement(scrn_name, new_scrn_name + "." + scrn_name.split(".")[-1])
+                    self.thumbnail_view.scroll_ctrl.ShowDir(self.thumbnail_view.scroll_ctrl.GetShowDir())
+                else:
+                    wx.MessageDialog(None, "Invalid screenshot name. Name already exists or empty.", "Name Error", wx.ICON_EXCLAMATION).ShowModal()
+
 
     def OnTakeScreenshot(self, event):
         pass
@@ -203,6 +218,10 @@ class LinSnap(wx.Frame):
         if index != -1:
             return self.collection_list.GetItemText(index)
         
+        
+    def OnClose(self, event):
+        exit(0)
+        event.Skip()
 
 # end of class LinSnap
 

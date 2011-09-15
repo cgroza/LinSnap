@@ -81,8 +81,10 @@ class LinSnap(wx.Frame):
         self.Bind(wx.EVT_TOOL, self.OnAddCollection, id = 2000)
         self.Bind(wx.EVT_TOOL, self.OnRemoveCollection, id = 2005)
         self.Bind(wx.EVT_TOOL, self.OnRenameCollection, id = 2010)
+        self.Bind(wx.EVT_TOOL, self.OnMoveScreenshot, id = 2020)
         self.Bind(wx.EVT_TOOL, self.OnRenameScreenshot, id = 2025)
-        self.Bind(wx.EVT_TOOL, self.OnUpload, id = 2030)
+        self.Bind(wx.EVT_TOOL, self.OnDeleteScreenshot, id = 2030)
+        self.Bind(wx.EVT_TOOL, self.OnUpload, id = 2035)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
 
     def __set_properties(self):
@@ -131,7 +133,9 @@ class LinSnap(wx.Frame):
         self.lin_snap_frame_toolbar.AddSimpleTool(2015, icon_take_screenshot, "Take Screenshot", "Takes a screenshot of the screen.")
         self.lin_snap_frame_toolbar.AddSimpleTool(2020, icon_move_screenshot, "Move Screenshot", "Moves the selected screenshot into another collection.")
         self.lin_snap_frame_toolbar.AddSimpleTool(2025, icon_rename_screenshot, "Rename Screenshot", "Renames the selected screenshot to a different name.")
-        self.lin_snap_frame_toolbar.AddSimpleTool(2030, icon_cloudapp, "Upload", "Uploads a collection or screenshot.")
+        self.lin_snap_frame_toolbar.AddSimpleTool(2030, icon_delete_screenshot, "Delete Screenshot", "Deletes the selected screenshot from  disk.")
+        
+        self.lin_snap_frame_toolbar.AddSimpleTool(2035, icon_cloudapp, "Upload", "Uploads a collection or screenshot.")
 
 
     def _CfgFilesExist(self):
@@ -178,10 +182,28 @@ class LinSnap(wx.Frame):
                 wx.MessageDialog(None, "Invalid collection name. Name already exists or empty.", "Name Error", wx.ICON_EXCLAMATION).ShowModal()
         
     def OnDeleteScreenshot(self, event):
-        pass
-
+        scrn_name = self.thumbnail_view.GetSelectedScrnName()
+        col_name = self.GetSelectedCollection()
+        if scrn_name and col_name:
+            dlg = wx.MessageDialog(None, "Are you sure? The real file will be deleted!", "Delete Screenshot", style = wx.ICON_QUESTION)
+            resp = dlg.ShowModal()
+            if resp == wx.ID_OK:
+                collection = self.collections.GetCollection(col_name)
+                if collection:
+                    collection.DeleteElement(scrn_name)
+                    self.thumbnail_view.scroll_ctrl.ShowDir(self.thumbnail_view.scroll_ctrl.GetShowDir())
+        
     def OnMoveScreenshot(self, event):
-        pass
+        scrn_name = self.thumbnail_view.GetSelectedScrnName()
+        col_name = self.GetSelectedCollection()
+        if scrn_name and col_name:
+            # get destination collection
+            dest_collection_name = ""
+            collection = self.collections.GetCollection(col_name)
+            dest_collection = self.collections.GetCollection(dest_collection_name)
+            if collection and dest_collection:
+                collection.MoveElement(scrn_name, dest_collection)
+                self.thumbnail_view.scroll_ctrl.ShowDir(self.thumbnail_view.scroll_ctrl.GetShowDir())
 
     def OnRenameScreenshot(self, event):
         scrn_name = self.thumbnail_view.GetSelectedScrnName()

@@ -89,6 +89,7 @@ class CollectionManager():
         iterator = self.elem_tree.iter("Element")
         for e in iterator:
             if e.get("name") == name:
+                os.remove(e.get("path"))
                 self.elem_tree.getroot().remove(e)
                 self.SaveTree()                
 
@@ -107,7 +108,7 @@ class CollectionManager():
         for e in iterator:
             if e.get("name") == name:
                 new_collection.AddElement(e)
-                os.rename(e.get("path"), os.join(new_collection.dir, elem.get("name")))
+                shutil.move(e.get("path"), os.join(new_collection.dir, elem.get("name")))
                 self.elem_tree.getroot().remove(e)
                 self.SaveTree()
 

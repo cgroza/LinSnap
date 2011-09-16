@@ -43,6 +43,11 @@ class SreenGrabberWindow(wx.Frame):
         self.bt_take_scrn = wx.Button(self.top_panel, -1, "Take Screenshot")
         self.bt_cancel = wx.Button(self.top_panel, -1, "Cancel")
 
+        self.__selecting_region = False
+        self.__take_screenshot = False
+        self.__start_mouse_pos = (0,0)
+        self.__end_mouse_pos = (0,0)
+
         self.__set_properties()
         self.__do_layout()
         self.__bind_events()
@@ -93,17 +98,44 @@ class SreenGrabberWindow(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.bt_take_scrn.Bind(wx.EVT_BUTTON, self.OnTakeScreenshot)
         self.bt_cancel.Bind(wx.EVT_BUTTON, self.OnClose)
+        self.top_panel.Bind(wx.EVT_LEFT_UP, self.OnMouseLeftUp)
+        self.Bind(wx.EVT_LEFT_DOWN, self.OnMouseLeftDown)
+        self.Bind(wx.EVT_MOTION, self.OnMouseMove)
 
     def SetCollectionList(self, collections):
         self.choice_collection.SetItems(collections)
 
-    def GetRectSelection(self):
-        pass
-
     def OnTakeScreenshot(self, event):
+        print "OnTakeScreenshot"
+        self.__take_screenshot = True
+        event.Skip()
+
+    def OnMouseLeftDown(self, event):
+        print "OnMouseLeftDown"
+        if self.__take_screenshot:
+            self.__start_mouse_pos = event.GetPosTuple()
+
+        event.Skip()
+
+    def OnMouseLeftUp(self, event):
+        print "OnMouseLeftUp"
+        if self.__take_screenshot:
+            self.__selecting_region = False
+            self.__end_mouse_pos = event.GetPosTuple()
+            self.TakeScreenshot()
+
+        event.Skip()
+
+    def OnMouseMove(self, event):
+        print "OnMouseMove"
+        if self.__take_screenshot and self.__selecting_region and event.Dragging():
+            pass
+        event.Skip()
+
+    def TakeScreenshot(self):
         collection_name = self.choice_collection.GetStringSelection()
         scrn_filename = self.filename_text.GetValue()
-        scrn_rect = self.GetRectSelection()
+        scrn_rect = (self.__start_mouse_pos, self.__end_mouse_pos)
 
         if not collection_name:
             wx.MessageDialog(None, "No collection selected. Please choose a collection.", "Error", wx.OK | wx.ICON_ERROR).ShowModal()
@@ -115,6 +147,7 @@ class SreenGrabberWindow(wx.Frame):
             return
 
         scrn_shot_bmp = ScreenGrabber.TakeScreenShot(scrn_rect)
+        self.__take_screenshot = False
         scrn_img = scrn_shot_bmp.ToImage()
         path = os.path.join(selected_col.dir, scrn_filename)
         scrn_img.Save(path)

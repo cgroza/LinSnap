@@ -69,7 +69,7 @@ class LinSnap(wx.Frame):
         self._PopulateCollectionList()
 
         self.thumbnail_view = ThumbnailView(self.v_splitter_pane_2, self, -1)
-
+        self.screen_grabber_win = SreenGrabberWindow(self.collections, self)
         
         self.__set_properties()
         self.__do_event_bindings()
@@ -81,6 +81,7 @@ class LinSnap(wx.Frame):
         self.Bind(wx.EVT_TOOL, self.OnAddCollection, id = 2000)
         self.Bind(wx.EVT_TOOL, self.OnRemoveCollection, id = 2005)
         self.Bind(wx.EVT_TOOL, self.OnRenameCollection, id = 2010)
+        self.Bind(wx.EVT_TOOL, self.OnTakeScreenshot, id = 2015)
         self.Bind(wx.EVT_TOOL, self.OnMoveScreenshot, id = 2020)
         self.Bind(wx.EVT_TOOL, self.OnRenameScreenshot, id = 2025)
         self.Bind(wx.EVT_TOOL, self.OnDeleteScreenshot, id = 2030)
@@ -195,7 +196,7 @@ class LinSnap(wx.Frame):
         self.Skip()
 
     def OnTakeScreenshot(self, event):
-        pass
+        self.screen_grabber_win.Show()
 
     def OnSelectCollection(self, event):
         col_name = self.GetSelectedCollection()

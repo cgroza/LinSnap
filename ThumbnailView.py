@@ -80,3 +80,42 @@ class ThumbnailView(ThumbnailCtrl):
         index = self.scroll_ctrl.GetSelection()
         if index > -1:
             return self.scroll_ctrl.GetItem(index).GetFileName()
+
+    def DeleteScreenshot(self):
+        scrn_name = self.GetSelectedScrnName()
+        col_name = self.app_instance.GetSelectedCollection()
+        if scrn_name and col_name:
+            dlg = wx.MessageDialog(None, "Are you sure? The real file will be deleted!", "Delete Screenshot", style = wx.ICON_QUESTION)
+            resp = dlg.ShowModal()
+            if resp == wx.ID_OK:
+                collection = self.app_instance.collections.GetCollection(col_name)
+                if collection:
+                    collection.DeleteElement(scrn_name)
+                    self.scroll_ctrl.ShowDir(self.scroll_ctrl.GetShowDir())
+        
+    def MoveScreenshot(self):
+        scrn_name = self.GetSelectedScrnName()
+        col_name = self.app_instance.GetSelectedCollection()
+        if scrn_name and col_name:
+            # get destination collection
+            dest_collection_name = ""
+            collection = self.app_instance.collections.GetCollection(col_name)
+            dest_collection = self.collections.GetCollection(dest_collection_name)
+            if collection and dest_collection:
+                collection.MoveElement(scrn_name, dest_collection)
+                self.scroll_ctrl.ShowDir(self.scroll_ctrl.GetShowDir())
+
+    def RenameScreenshot(self):
+        scrn_name = self.GetSelectedScrnName()
+        col_name = self.app_instance.GetSelectedCollection()
+        if scrn_name and col_name:
+            dlg = wx.TextEntryDialog(None, "Rename screenshot to: ", "Rename Screenshot")
+            resp = dlg.ShowModal()
+            if resp == wx.ID_OK:
+                new_scrn_name = dlg.GetValue()
+                collection = self.app_instance.collections.GetCollection(col_name)
+                if new_scrn_name and collection:
+                    collection.RenameElement(scrn_name, new_scrn_name + "." + scrn_name.split(".")[-1])
+                    self.scroll_ctrl.ShowDir(self.scroll_ctrl.GetShowDir())
+                else:
+                    wx.MessageDialog(None, "Invalid screenshot name. Name already exists or empty.", "Name Error", wx.ICON_EXCLAMATION).ShowModal()

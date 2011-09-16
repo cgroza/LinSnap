@@ -166,7 +166,7 @@ class LinSnap(wx.Frame):
                 self.screen_grabber_win.SetCollectionList(self.collections.collections.keys())
 
     def OnUpload(self, event):
-        self.upload_win.SetSelection(0)
+        self.upload_win.upload_choice.SetSelection(0)
         self.upload_win.Show()
 
     def OnRenameCollection(self, event):
@@ -181,45 +181,18 @@ class LinSnap(wx.Frame):
             else:
                 wx.MessageDialog(None, "Invalid collection name. Name already exists or empty.", "Name Error", wx.ICON_EXCLAMATION).ShowModal()
         
+
     def OnDeleteScreenshot(self, event):
-        scrn_name = self.thumbnail_view.GetSelectedScrnName()
-        col_name = self.GetSelectedCollection()
-        if scrn_name and col_name:
-            dlg = wx.MessageDialog(None, "Are you sure? The real file will be deleted!", "Delete Screenshot", style = wx.ICON_QUESTION)
-            resp = dlg.ShowModal()
-            if resp == wx.ID_OK:
-                collection = self.collections.GetCollection(col_name)
-                if collection:
-                    collection.DeleteElement(scrn_name)
-                    self.thumbnail_view.scroll_ctrl.ShowDir(self.thumbnail_view.scroll_ctrl.GetShowDir())
-        
+        self.thumbnail_view.DeleteScreenshot()
+        event.Skip()
+
     def OnMoveScreenshot(self, event):
-        scrn_name = self.thumbnail_view.GetSelectedScrnName()
-        col_name = self.GetSelectedCollection()
-        if scrn_name and col_name:
-            # get destination collection
-            dest_collection_name = ""
-            collection = self.collections.GetCollection(col_name)
-            dest_collection = self.collections.GetCollection(dest_collection_name)
-            if collection and dest_collection:
-                collection.MoveElement(scrn_name, dest_collection)
-                self.thumbnail_view.scroll_ctrl.ShowDir(self.thumbnail_view.scroll_ctrl.GetShowDir())
+        self.thumbnail_view.MoveScreenshot()
+        event.Skip()
 
     def OnRenameScreenshot(self, event):
-        scrn_name = self.thumbnail_view.GetSelectedScrnName()
-        col_name = self.GetSelectedCollection()
-        if scrn_name and col_name:
-            dlg = wx.TextEntryDialog(None, "Rename screenshot to: ", "Rename Screenshot")
-            resp = dlg.ShowModal()
-            if resp == wx.ID_OK:
-                new_scrn_name = dlg.GetValue()
-                collection = self.collections.GetCollection(col_name)
-                if new_scrn_name and collection:
-                    collection.RenameElement(scrn_name, new_scrn_name + "." + scrn_name.split(".")[-1])
-                    self.thumbnail_view.scroll_ctrl.ShowDir(self.thumbnail_view.scroll_ctrl.GetShowDir())
-                else:
-                    wx.MessageDialog(None, "Invalid screenshot name. Name already exists or empty.", "Name Error", wx.ICON_EXCLAMATION).ShowModal()
-
+        self.thumbnail_view.RenameScreenshot()
+        self.Skip()
 
     def OnTakeScreenshot(self, event):
         pass

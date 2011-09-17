@@ -44,6 +44,7 @@ class UploadWin(wx.Frame):
         self.service_box.Bind(wx.EVT_RADIOBOX, self.OnRadioBoxSelect)
         self.Bind(wx.EVT_BUTTON, self._NotifyUser, id = self.GetId())
         self.upload_choice.Bind(wx.EVT_CHOICE, self._OnChoiceUpload)
+
     def __set_properties(self):
         # begin wxGlade: UploadWin.__set_properties
         self.SetTitle("Upload")

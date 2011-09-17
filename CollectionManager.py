@@ -106,9 +106,9 @@ class CollectionManager():
     def MoveElement(self, elem, new_collection):
         iterator = self.elem_tree.iter("Element")
         for e in iterator:
-            if e.get("name") == name:
+            if e.get("name") == elem:
                 new_collection.AddElement(e)
-                shutil.move(e.get("path"), os.join(new_collection.dir, elem.get("name")))
+                shutil.move(e.get("path"), os.path.join(new_collection.dir, e.get("name")))
                 self.elem_tree.getroot().remove(e)
                 self.SaveTree()
 

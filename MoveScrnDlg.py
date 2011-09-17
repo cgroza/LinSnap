@@ -9,44 +9,35 @@ import wx
 
 
 
-class ScrnMoveDlg(wx.Frame):
-    def __init__(self, parent, id = -1):
-        # begin wxGlade: ScrnMoveDlg.__init__
+class MoveScrnDlg(wx.Dialog):
+    def __init__(self, parent, id = -1, collections = []):
+        # begin wxGlade: MoveScrnDlg.__init__
         self.parent = parent
-        wx.Frame.__init__(self, self.parent, id, size = (100,100), style = wx.MINIMIZE_BOX | wx.MAXIMIZE_BOX | wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
-        self.collection_choice = wx.Choice(self, -1, choices=[])
-        self.bt_move = wx.Button(self, -1, "Move")
-        self.cancel_bt = wx.Button(self, -1, "Cancel")
-
-        self.__set_properties()
+        wx.Dialog.__init__(self, self.parent, id, "Move Sccreenshot to:")
+        self.collection_choice = wx.Choice(self, -1, choices = collections)
+        self.bt_sizer = self.CreateButtonSizer(wx.OK | wx.CANCEL)
         self.__do_layout()
         # end wxGlade
 
-    def __set_properties(self):
-        # begin wxGlade: ScrnMoveDlg.__set_properties
-        self.SetTitle("Move Screenshot to:")
-        # end wxGlade
-
     def __do_layout(self):
-        # begin wxGlade: ScrnMoveDlg.__do_layout
+        # begin wxGlade: MoveScrnDlg.__do_layout
         main_sizer = wx.BoxSizer(wx.VERTICAL)
-        bt_sizer = wx.BoxSizer(wx.HORIZONTAL)
         main_sizer.Add(self.collection_choice, 1, wx.ALL|wx.EXPAND, 0)
-        bt_sizer.Add(self.bt_move, 0, wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM, 0)
-        bt_sizer.Add(self.cancel_bt, 0, wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM, 0)
-        main_sizer.Add(bt_sizer, 1, wx.ALIGN_RIGHT, 0)
+        main_sizer.Add(self.bt_sizer, 1, wx.ALL|wx.EXPAND, 0)
         self.SetSizer(main_sizer)
         main_sizer.Fit(self)
         self.Layout()
         # end wxGlade
 
-# end of class ScrnMoveDlg
+    def ShowModal(self):
+        return (wx.Dialog.ShowModal(self), self.collection_choice.GetStringSelection())
+# end of class MoveScrnDlg
 
 
 if __name__ == "__main__":
     app = wx.PySimpleApp(0)
     wx.InitAllImageHandlers()
-    scrn_move_dlg = ScrnMoveDlg(None, -1)
+    scrn_move_dlg = MoveScrnDlg(None, -1)
     app.SetTopWindow(scrn_move_dlg)
     scrn_move_dlg.Show()
     app.MainLoop()

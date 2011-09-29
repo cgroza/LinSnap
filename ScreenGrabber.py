@@ -16,7 +16,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import wx
+import wx, os
 import CollectionManager
 import CollectionDatabase
 # begin wxGlade: extracode
@@ -30,6 +30,7 @@ class SreenGrabberWindow(wx.Frame):
         wx.Frame.__init__(self, parent , id, style = wx.MINIMIZE_BOX | wx.MAXIMIZE_BOX |
                           wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
 
+        self.parent = parent
         self.collection_db = collection_db
         self.top_panel = wx.Panel(self, -1)
         self.save_label = wx.StaticText(self.top_panel, -1, "Pick a colection to save the screenshot in:")
@@ -107,7 +108,11 @@ class SreenGrabberWindow(wx.Frame):
 
     def OnTakeScreenshot(self, event):
         print "OnTakeScreenshot"
-        self.__take_screenshot = True
+        sel = self.options_radio_box.GetSelection()
+        if sel == 0:
+            self.TakeScreenshot()
+        else:
+            self.__take_screenshot = True
         event.Skip()
 
     def OnMouseLeftDown(self, event):
@@ -135,25 +140,26 @@ class SreenGrabberWindow(wx.Frame):
     def TakeScreenshot(self):
         collection_name = self.choice_collection.GetStringSelection()
         scrn_filename = self.filename_text.GetValue()
-        scrn_rect = (self.__start_mouse_pos, self.__end_mouse_pos)
-
+        #scrn_rect = wx.Rect(self.__start_mouse_pos[0], self.__start_mouse_pos[1], self.__end_mouse_pos[0], self.__end_mouse_pos[1])
+        scrn_rect = wx.Rect(0,0, 1024, 768)
         if not collection_name:
             wx.MessageDialog(None, "No collection selected. Please choose a collection.", "Error", wx.OK | wx.ICON_ERROR).ShowModal()
             return
 
         selected_col = self.collection_db.GetCollection(collection_name)
-        if not scrn_filename or not selected_col.FindElement(scrn_filename):
+        if not scrn_filename or selected_col.FindElement(scrn_filename):
             wx.MessageDialog(None, "Invalid file name. File name is empty or already exists.", "Error", wx.OK | wx.ICON_ERROR).ShowModal()
             return
 
+        # we may have to move all this in a separate thread because it hangs the UI.
         scrn_shot_bmp = ScreenGrabber.TakeScreenShot(scrn_rect)
         self.__take_screenshot = False
-        scrn_img = scrn_shot_bmp.ToImage()
-        path = os.path.join(selected_col.dir, scrn_filename)
-        scrn_img.Save(path)
+        scrn_img = scrn_shot_bmp.ConvertToImage()
+        path = os.path.join(selected_col.dir, scrn_filename) + ".png"
+        scrn_img.SaveFile(path, wx.BITMAP_TYPE_PNG)
         elem_attrs = { "tags" : "", "name" : scrn_filename, "path" : path }
         selected_col.CreateElement(elem_attrs)
-        self.parent.thumbnail_view.scroll_ctrl.UpdateShow()
+        self.parent.thumbnail_view.scroll_ctrl.ShowDir(self.parent.collections.GetCollection(collection_name).dir)
 
     def OnClose(self, event):
         self.filename_text.Clear()
@@ -166,7 +172,7 @@ class ScreenGrabber():
     """
 
     @staticmethod
-    def TakeScreenShot(self, rect):
+    def TakeScreenShot(rect):
         """ Takes a screenshot of the screen at give pos & size (rect). """
 
         #Create a DC for the whole screen area
@@ -198,7 +204,6 @@ class ScreenGrabber():
         #Select the Bitmap out of the memory DC by selecting a new
         #uninitialized Bitmap
         memDC.SelectObject(wx.NullBitmap)
-
         return bmp 
 
 if __name__ == "__main__":

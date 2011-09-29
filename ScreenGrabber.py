@@ -106,6 +106,9 @@ class SreenGrabberWindow(wx.Frame):
     def SetCollectionList(self, collections):
         self.choice_collection.SetItems(collections)
 
+    def SetCurrentCollection(self, collection_name):
+        self.choice_collection.SetStringSelection(collection_name)
+
     def OnTakeScreenshot(self, event):
         print "OnTakeScreenshot"
         sel = self.options_radio_box.GetSelection()

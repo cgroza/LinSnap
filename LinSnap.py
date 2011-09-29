@@ -202,7 +202,9 @@ class LinSnap(wx.Frame):
         col_name = self.GetSelectedCollection()
         if col_name:
             self.thumbnail_view.scroll_ctrl.ShowDir(self.collections.GetCollection(col_name).dir)
+            self.screen_grabber_win.SetCurrentCollection(col_name)
             self.Refresh()
+        event.Skip()
 
     def _PopulateCollectionList(self):
         # add existing collections to the list

@@ -51,7 +51,6 @@ class ThumbnailView(ThumbnailCtrl):
         # thread = GenericThread(self.scroll_ctrl.ShowDir, collection.dir)
         # thread.start()
         self.scroll_ctrl.ShowDir(collection.dir)
-        wx.WakeUpIdle()
 
     def OnThumbClick(self, event):
         event.Skip()

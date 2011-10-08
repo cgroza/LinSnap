@@ -41,6 +41,7 @@ class SreenGrabberWindow(wx.Frame):
         self.options_radio_box = wx.RadioBox(self.top_panel, -1, "Capture", choices=["Whole screen", "Current window", "Selected region"], majorDimension=0, style=wx.RA_SPECIFY_COLS)
         self.delay_label = wx.StaticText(self.top_panel, -1, "Screenshot delay: ")
         self.delay_spin_ctrl = wx.SpinCtrl(self.top_panel, -1, "1", min=0, max=100, style=wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.TE_AUTO_URL|wx.TE_NOHIDESEL)
+        self.hide_linsnap = wx.CheckBox(self.top_panel, -1, "Hide LinSnap")
         self.bt_take_scrn = wx.Button(self.top_panel, -1, "Take Screenshot")
         self.bt_cancel = wx.Button(self.top_panel, -1, "Cancel")
 
@@ -84,6 +85,7 @@ class SreenGrabberWindow(wx.Frame):
         delay_h_sizer.Add(self.delay_label, 0, wx.ALL|wx.EXPAND, 0)
         delay_h_sizer.Add(self.delay_spin_ctrl, 0, wx.LEFT|wx.RIGHT, 0)
         scrn_opt_v_sizer.Add(delay_h_sizer, 0, wx.ALL|wx.EXPAND, 3)
+        scrn_opt_v_sizer.Add(self.hide_linsnap, 0, wx.ALL|wx.EXPAND, 0)
         v_sizer.Add(scrn_opt_v_sizer, 1, wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL, 0)
         h_bt_sizer.Add(self.bt_take_scrn, 0, wx.RIGHT|wx.BOTTOM|wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM, 0)
         h_bt_sizer.AddSpacer(5)
@@ -113,6 +115,11 @@ class SreenGrabberWindow(wx.Frame):
         print "OnTakeScreenshot"
         sel = self.options_radio_box.GetSelection()
         if sel == 0:
+            # Hide LinSnap
+            if self.hide_linsnap.GetValue():
+                self.parent.Hide()
+            # Hide screenshot whindow
+            self.Hide()
             self.TakeScreenshot()
         else:
             self.__take_screenshot = True
@@ -157,14 +164,22 @@ class SreenGrabberWindow(wx.Frame):
         # we may have to move all this in a separate thread because it hangs the UI.
         scrn_shot_bmp = ScreenGrabber.TakeScreenShot(scrn_rect)
         self.__take_screenshot = False
+        # save screenshot in the collection folder
         scrn_img = scrn_shot_bmp.ConvertToImage()
         path = os.path.join(selected_col.dir, scrn_filename) + ".png"
         scrn_img.SaveFile(path, wx.BITMAP_TYPE_PNG)
+        # add it to the collection xml tree
         elem_attrs = { "tags" : "", "name" : scrn_filename, "path" : path }
         selected_col.CreateElement(elem_attrs)
-        self.parent.thumbnail_view.scroll_ctrl.ShowCollection(self.parent.collections.GetCollection(collection_name))
+        # refresh the view
+        self.parent.thumbnail_view.ShowCollection(self.parent.collections.GetCollection(collection_name))
+
+        # bring back LinSnap windows
+        self.parent.Show()
+        self.Show()
 
     def OnClose(self, event):
+        # reset filename 
         self.filename_text.Clear()
         self.Hide()
     # end of class SreenGrabberWindow

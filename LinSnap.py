@@ -25,6 +25,7 @@ from ThumbnailView import *
 from CollectionDatabase import *
 from AddCollectionWin import *
 from UploadWin import *
+
 # begin wxGlade: extracode
 # end wxGlade
 
@@ -156,6 +157,7 @@ class LinSnap(wx.Frame):
             
     def OnAddCollection(self, event):
         self.add_collection_win.Show()
+        event.Skip()
 
     def OnRemoveCollection(self, event):
         col_name = self.GetSelectedCollection()
@@ -165,10 +167,12 @@ class LinSnap(wx.Frame):
                 self.collection_list.DeleteItem(self.collection_list.GetFocusedItem())
                 self.thumbnail_view.scroll_ctrl.Clear()
                 self.screen_grabber_win.SetCollectionList(self.collections.collections.keys())
+        event.Skip()
 
     def OnUpload(self, event):
         self.upload_win.upload_choice.SetSelection(0)
         self.upload_win.Show()
+        event.Skip()
 
     def OnRenameCollection(self, event):
         col_name = self.GetSelectedCollection()
@@ -181,7 +185,7 @@ class LinSnap(wx.Frame):
                 self.collection_list.SetItemText(self.collection_list.GetFocusedItem(), new_col_name)
             else:
                 wx.MessageDialog(None, "Invalid collection name. Name already exists or empty.", "Name Error", wx.ICON_EXCLAMATION).ShowModal()
-        
+        event.Skip()
 
     def OnDeleteScreenshot(self, event):
         self.thumbnail_view.DeleteScreenshot()
@@ -193,17 +197,18 @@ class LinSnap(wx.Frame):
 
     def OnRenameScreenshot(self, event):
         self.thumbnail_view.RenameScreenshot()
-        self.Skip()
+        event.Skip()
 
     def OnTakeScreenshot(self, event):
         self.screen_grabber_win.Show()
+        event.Skip()
 
     def OnSelectCollection(self, event):
         col_name = self.GetSelectedCollection()
         if col_name:
-            self.thumbnail_view.scroll_ctrl.ShowDir(self.collections.GetCollection(col_name).dir)
+            self.thumbnail_view.ShowCollection(self.collections.GetCollection(col_name))
+            # self.thumbnail_view.scroll_ctrl.ShowDir(self.collections.GetCollection(col_name).dir)
             self.screen_grabber_win.SetCurrentCollection(col_name)
-            self.Refresh()
         event.Skip()
 
     def _PopulateCollectionList(self):
@@ -220,7 +225,7 @@ class LinSnap(wx.Frame):
         
     def OnClose(self, event):
         exit(0)
-        event.Skip()
+
 
 # end of class LinSnap
 

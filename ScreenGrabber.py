@@ -162,7 +162,7 @@ class SreenGrabberWindow(wx.Frame):
         scrn_img.SaveFile(path, wx.BITMAP_TYPE_PNG)
         elem_attrs = { "tags" : "", "name" : scrn_filename, "path" : path }
         selected_col.CreateElement(elem_attrs)
-        self.parent.thumbnail_view.scroll_ctrl.ShowDir(self.parent.collections.GetCollection(collection_name).dir)
+        self.parent.thumbnail_view.scroll_ctrl.ShowCollection(self.parent.collections.GetCollection(collection_name))
 
     def OnClose(self, event):
         self.filename_text.Clear()

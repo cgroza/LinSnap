@@ -19,6 +19,7 @@
 import wx
 from wx.lib.agw.thumbnailctrl import *
 from MoveScrnDlg import *
+# from Threads import *
 
 class ThumbnailView(ThumbnailCtrl):
     """
@@ -46,32 +47,41 @@ class ThumbnailView(ThumbnailCtrl):
         self.scroll_ctrl.SetPopupMenu(self.popup_menu)
 
 
+    def ShowCollection(self, collection):
+        # thread = GenericThread(self.scroll_ctrl.ShowDir, collection.dir)
+        # thread.start()
+        self.scroll_ctrl.ShowDir(collection.dir)
+        wx.WakeUpIdle()
 
     def OnThumbClick(self, event):
-        pass
+        event.Skip()
 
 
     def OnThumbDoubleClick(self, event):
-        pass
-
+        event.Skip()
 
     def OnMenuUpload(self, event):
         file_path = os.path.join(self.GetShowDir(), self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName())
         # self.app_instance.upload_win.SetUploadFiles([file_path])
         self.app_instance.upload_win.SetSelection(0)
         self.app_instance.upload_win.Show()
+        event.Skip()
 
     def OnMenuRename(self, event):
         item_name = self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName()
+        event.Skip()
 
     def OnMenuDelete(self, event):
         item_name = self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName()
+        event.Skip()
 
     def OnMenuMove(self, event):
         item_name =  self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName()
+        event.Skip()
 
     def OnMenuEditTags(self, event):
         item_name = self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName()
+        event.Skip()
 
     def _GetCurrentCollection(self):
         collection_name = self.app_instance.collection_list.GetItemText(self.app_instance.collection_list.GetFocusedItem())

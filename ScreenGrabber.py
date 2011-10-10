@@ -25,6 +25,14 @@ import CollectionDatabase
 
 
 class SreenGrabberWindow(wx.Frame):
+    class ScrnShotTimer(wx.Timer):
+        def __init__(self, func):
+            wx.Timer.__init__(self)
+            self.__func = func
+
+        def Notify(self):
+            self.__func()
+
     def __init__(self, collection_db, parent, id = -1):
         # begin wxGlade: SreenGrabberWindow.__init__
         wx.Frame.__init__(self, parent , id, style = wx.MINIMIZE_BOX | wx.MAXIMIZE_BOX |
@@ -113,16 +121,21 @@ class SreenGrabberWindow(wx.Frame):
 
     def OnTakeScreenshot(self, event):
         print "OnTakeScreenshot"
+        self.__take_screenshot = True
         sel = self.options_radio_box.GetSelection()
-        if sel == 0:
-            # Hide LinSnap
-            if self.hide_linsnap.GetValue():
-                self.parent.Hide()
+        # Hide LinSnap
+        if self.hide_linsnap.GetValue():
+            self.parent.Hide()
             # Hide screenshot whindow
-            self.Hide()
+        self.Hide()
+        # shoot right away if delay is 0
+        if self.delay_spin_ctrl.GetValue() == 0:
             self.TakeScreenshot()
+        # else, create a timer
         else:
-            self.__take_screenshot = True
+            self.timer = self.__class__.ScrnShotTimer(self.TakeScreenshot)
+            self.timer.Start( 1000 * self.delay_spin_ctrl.GetValue(), True)
+
         event.Skip()
 
     def OnMouseLeftDown(self, event):

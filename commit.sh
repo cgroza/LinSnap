@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export EDITOR=leafpad
+export EDITOR=mousepad
 ./clean.sh
 git add .
 git checkout devel

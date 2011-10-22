@@ -42,6 +42,9 @@ class ThumbnailView(ThumbnailCtrl):
         self.popup_menu.Append(1020, "Upload", "Upload the thumbnail to a web service.")
         self.popup_menu.Append(1025, "Edit Tags", "Edit the tags of the selected thumbnail.")
 
+        self.Bind(wx.EVT_MENU, self.OnMenuRename, id = 1005)
+        self.Bind(wx.EVT_MENU, self.OnMenuDelete, id = 1010)
+        self.Bind(wx.EVT_MENU, self.OnMenuMove, id = 1015)
         self.Bind(wx.EVT_MENU, self.OnMenuUpload, id = 1020)
 
         self.scroll_ctrl.SetPopupMenu(self.popup_menu)
@@ -60,22 +63,36 @@ class ThumbnailView(ThumbnailCtrl):
         event.Skip()
 
     def OnMenuUpload(self, event):
-        file_path = os.path.join(self.GetShowDir(), self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName())
+        #file_path = os.path.join(self.GetShowDir(), self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName())
         # self.app_instance.upload_win.SetUploadFiles([file_path])
-        self.app_instance.upload_win.SetSelection(0)
+        self.app_instance.upload_win.upload_choice.SetSelection(0)
         self.app_instance.upload_win.Show()
         event.Skip()
 
     def OnMenuRename(self, event):
-        item_name = self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName()
+        self.RenameSelectedScreenshot()
         event.Skip()
 
+    def RenameSelectedScreenshot(self):
+        col_name = self.app_instance.GetSelectedCollection()
+        dlg = wx.TextEntryDialog(None, "Rename collection to: ", "Rename Collection")
+        resp = dlg.ShowModal()
+        if resp == wx.ID_OK:
+            new_col_name = dlg.GetValue()
+            if new_col_name and new_col_name not in self.app_instance.collections.collections:
+                self.collections.RenameCollection(col_name, new_col_name)
+                self.collection_list.SetItemText(self.app_instance.collection_list.GetFocusedItem(), new_col_name)
+            else:
+                wx.MessageDialog(None, "Invalid collection name. Name already exists or empty.", "Name Error", wx.ICON_EXCLAMATION).ShowModal()
+        event.Skip()
+
+
     def OnMenuDelete(self, event):
-        item_name = self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName()
+        self.DeleteScreenshot()
         event.Skip()
 
     def OnMenuMove(self, event):
-        item_name =  self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName()
+        self.MoveScreenshot()
         event.Skip()
 
     def OnMenuEditTags(self, event):
@@ -95,7 +112,7 @@ class ThumbnailView(ThumbnailCtrl):
         scrn_name = self.GetSelectedScrnName()
         col_name = self.app_instance.GetSelectedCollection()
         if scrn_name and col_name:
-            dlg = wx.MessageDialog(None, "Are you sure? The real file will be deleted!", "Delete Screenshot", style = wx.ICON_QUESTION)
+            dlg = wx.MessageDialog(None, "Are you sure? The real file will be deleted!", "Delete Screenshot", style = wx.ICON_QUESTION | wx.YES_NO)
             resp = dlg.ShowModal()
             if resp == wx.ID_OK:
                 collection = self.app_instance.collections.GetCollection(col_name)

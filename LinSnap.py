@@ -175,17 +175,7 @@ class LinSnap(wx.Frame):
         event.Skip()
 
     def OnRenameCollection(self, event):
-        col_name = self.GetSelectedCollection()
-        dlg = wx.TextEntryDialog(None, "Rename collection to: ", "Rename Collection")
-        resp = dlg.ShowModal()
-        if resp == wx.ID_OK:
-            new_col_name = dlg.GetValue()
-            if new_col_name and new_col_name not in self.collections.collections:
-                self.collections.RenameCollection(col_name, new_col_name)
-                self.collection_list.SetItemText(self.collection_list.GetFocusedItem(), new_col_name)
-            else:
-                wx.MessageDialog(None, "Invalid collection name. Name already exists or empty.", "Name Error", wx.ICON_EXCLAMATION).ShowModal()
-        event.Skip()
+        self.thumbnail_view.RenameSelectedScreenshot()
 
     def OnDeleteScreenshot(self, event):
         self.thumbnail_view.DeleteScreenshot()

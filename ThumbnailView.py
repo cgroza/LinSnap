@@ -30,8 +30,9 @@ class ThumbnailView(ThumbnailCtrl):
         self.app_instance = app_instance
         self.collections = self.app_instance.collections
         self.collection_list = self.app_instance.collection_list
+        # Note: Using PIL causes the program to freeze.
         ThumbnailCtrl.__init__(self, self.parent, id, (-1, -1), (-1, -1),
-                                   THUMB_OUTLINE_RECT, THUMB_FILTER_IMAGES, PILImageHandler)
+                                   THUMB_OUTLINE_RECT, THUMB_FILTER_IMAGES)
 
         self.scroll_ctrl = self._scrolled
         # Creote popup menu, this menu will appear when the user will click on a thumbnail
@@ -55,9 +56,7 @@ class ThumbnailView(ThumbnailCtrl):
     def ShowCollection(self, collection):
         # thread = GenericThread(self.scroll_ctrl.ShowDir, collection.dir)
         # thread.start()
-        self.scroll_ctrl.Freeze()
         self.scroll_ctrl.ShowDir(collection.dir)
-        self.scroll_ctrl.Thaw()
 
     def OnThumbClick(self, event):
         event.Skip()

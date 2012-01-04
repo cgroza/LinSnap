@@ -120,7 +120,6 @@ class SreenGrabberWindow(wx.Frame):
         self.choice_collection.SetStringSelection(collection_name)
 
     def OnTakeScreenshot(self, event):
-        print "OnTakeScreenshot"
         self.__take_screenshot = True
         sel = self.options_radio_box.GetSelection()
         # Hide LinSnap

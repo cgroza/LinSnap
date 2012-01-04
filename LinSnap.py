@@ -175,7 +175,8 @@ class LinSnap(wx.Frame):
         event.Skip()
 
     def OnRenameCollection(self, event):
-        self.thumbnail_view.RenameSelectedScreenshot()
+        self.thumbnail_view.RenameSelectedCollection()
+        event.Skip()
 
     def OnDeleteScreenshot(self, event):
         self.thumbnail_view.DeleteScreenshot()

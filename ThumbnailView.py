@@ -28,6 +28,8 @@ class ThumbnailView(ThumbnailCtrl):
     def __init__(self, parent, app_instance, id):
         self.parent = parent
         self.app_instance = app_instance
+        self.collections = self.app_instance.collections
+        self.collection_list = self.app_instance.collection_list
         ThumbnailCtrl.__init__(self, self.parent, id, (-1, -1), (-1, -1),
                                    THUMB_OUTLINE_RECT, THUMB_FILTER_IMAGES, PILImageHandler)
 
@@ -53,7 +55,9 @@ class ThumbnailView(ThumbnailCtrl):
     def ShowCollection(self, collection):
         # thread = GenericThread(self.scroll_ctrl.ShowDir, collection.dir)
         # thread.start()
+        self.scroll_ctrl.Freeze()
         self.scroll_ctrl.ShowDir(collection.dir)
+        self.scroll_ctrl.Thaw()
 
     def OnThumbClick(self, event):
         event.Skip()
@@ -70,10 +74,10 @@ class ThumbnailView(ThumbnailCtrl):
         event.Skip()
 
     def OnMenuRename(self, event):
-        self.RenameSelectedScreenshot()
+        self.RenameScreenshot()
         event.Skip()
 
-    def RenameSelectedScreenshot(self):
+    def RenameSelectedCollection(self):
         col_name = self.app_instance.GetSelectedCollection()
         dlg = wx.TextEntryDialog(None, "Rename collection to: ", "Rename Collection")
         resp = dlg.ShowModal()
@@ -84,7 +88,6 @@ class ThumbnailView(ThumbnailCtrl):
                 self.collection_list.SetItemText(self.app_instance.collection_list.GetFocusedItem(), new_col_name)
             else:
                 wx.MessageDialog(None, "Invalid collection name. Name already exists or empty.", "Name Error", wx.ICON_EXCLAMATION).ShowModal()
-        event.Skip()
 
 
     def OnMenuDelete(self, event):

@@ -116,7 +116,7 @@ class ThumbnailView(ThumbnailCtrl):
         if scrn_name and col_name:
             dlg = wx.MessageDialog(None, "Are you sure? The real file will be deleted!", "Delete Screenshot", style = wx.ICON_QUESTION | wx.YES_NO)
             resp = dlg.ShowModal()
-            if resp == wx.ID_OK:
+            if resp == wx.ID_YES:
                 collection = self.app_instance.collections.GetCollection(col_name)
                 if collection:
                     collection.DeleteElement(scrn_name)

@@ -31,14 +31,21 @@ class CollectionManager():
     def __init__(self, collection_file, name):
         self.collection_file = collection_file
         self.elem_tree = parse(self.collection_file)
+        self._ok = False
 
         self.name = name
         self.SetName(self.name)
         iterator = self.elem_tree.iter("Collection")
         for col in iterator:
             self.dir = col.get("path")
-#        self.CheckForNewFiles()
+            if os.path.exists(self.dir):
+                self._ok = True
+                self.CheckForNewFiles()
 
+
+    def IsOk(self):
+        return self._ok
+            
     def SetName(self, new_name):
         # update the xml file with the new name
         iterator = self.elem_tree.iter("Collection")

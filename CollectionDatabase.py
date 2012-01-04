@@ -51,8 +51,8 @@ class CollectionDatabase():
                 if col_file and col_name:
                     if os.path.exists(col_file):
                         collection = CollectionManager(col_file, col_name)
-                        collection.CheckForNewFiles()
-                        self.collections[col_name] = collection
+                        if collection.IsOk():
+                            self.collections[col_name] = collection
 
     def _WriteCollectionsFile(self):
         # empty file

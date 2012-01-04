@@ -159,6 +159,7 @@ class SreenGrabberWindow(wx.Frame):
             pass
         event.Skip()
 
+        
     def TakeScreenshot(self):
         collection_name = self.choice_collection.GetStringSelection()
         scrn_filename = self.filename_text.GetValue()
@@ -174,7 +175,7 @@ class SreenGrabberWindow(wx.Frame):
             return
 
         # we may have to move all this in a separate thread because it hangs the UI.
-        scrn_shot_bmp = ScreenGrabber.TakeScreenShot(scrn_rect)
+        scrn_shot_bmp = ScreenGrabber.TakeScrnWholeScreen()
         self.__take_screenshot = False
         # save screenshot in the collection folder
         scrn_img = scrn_shot_bmp.ConvertToImage()
@@ -202,7 +203,58 @@ class ScreenGrabber():
     """
 
     @staticmethod
-    def TakeScreenShot(rect):
+    def TakeScrnCurrentWin():
+        import gtk.gdk
+        w = gtk.gdk.get_window_at_pointer()[0]
+        sz = w.get_size()
+        print "The size of the window is %d x %d" % sz
+        pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB,False,8,sz[0],sz[1])
+        pb = pb.get_from_drawable(w,w.get_colormap(),0,0,0,0,sz[0],sz[1])
+        if (pb != None):
+            pb.save("screenshot.png","png")
+            #success
+        else:
+            pass
+            #fail
+    @staticmethod
+    def TakeScrnWholeScreen():
+        """ Takes a screenshot of the screen at give pos & size (rect). """
+
+        #Create a DC for the whole screen area
+        dcScreen = wx.ScreenDC()
+
+        #Create a Bitmap that will later on hold the screenshot image
+        #Note that the Bitmap must have a size big enough to hold the screenshot
+        #-1 means using the current default colour depth
+        rect = wx.GetDisplaySize()
+
+        bmp = wx.EmptyBitmap(rect.GetWidth(), rect.GetHeight())
+
+        #Create a memory DC that will be used for actually taking the screenshot
+        memDC = wx.MemoryDC()
+
+        #Tell the memory DC to use our Bitmap
+        #all drawing action on the memory DC will go to the Bitmap now
+        memDC.SelectObject(bmp)
+
+        #Blit (in this case copy) the actual screen on the memory DC
+        #and thus the Bitmap
+        memDC.Blit( 0, #Copy to this X coordinate
+            0, #Copy to this Y coordinate
+            rect.GetWidth(), #Copy this width
+            rect.GetHeight(), #Copy this height
+            dcScreen, #From where do we copy?
+            rect.GetWidth(), #What's the X offset in the original DC?
+            rect.GetHeight()  #What's the Y offset in the original DC?
+            )
+
+        #Select the Bitmap out of the memory DC by selecting a new
+        #uninitialized Bitmap
+        memDC.SelectObject(wx.NullBitmap)
+        return bmp 
+
+    @staticmethod
+    def TakeRegionScreenShot(rect):
         """ Takes a screenshot of the screen at give pos & size (rect). """
 
         #Create a DC for the whole screen area

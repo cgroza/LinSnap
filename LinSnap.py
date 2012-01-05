@@ -25,6 +25,7 @@ from ThumbnailView import *
 from CollectionDatabase import *
 from AddCollectionWin import *
 from UploadWin import *
+from Searching import *
 
 # begin wxGlade: extracode
 # end wxGlade
@@ -64,6 +65,8 @@ class LinSnap(wx.Frame):
         # Tool Bar
         self.lin_snap_frame_toolbar = wx.ToolBar(self, -1)
         self.SetToolBar(self.lin_snap_frame_toolbar)
+        self.search_text_ctrl = wx.TextCtrl(self.lin_snap_frame_toolbar, -1, style = wx.TE_PROCESS_ENTER)
+
         self.__build_toolbar()
         # Tool Bar end
         self.collection_list = wx.ListCtrl(self.v_splitter_pane_1, -1, style=wx.LC_LIST|wx.SUNKEN_BORDER)
@@ -88,6 +91,7 @@ class LinSnap(wx.Frame):
         self.Bind(wx.EVT_TOOL, self.OnDeleteScreenshot, id = 2030)
         self.Bind(wx.EVT_TOOL, self.OnUpload, id = 2035)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
+        self.search_text_ctrl.Bind(wx.EVT_TEXT_ENTER, self.OnSearch)
 
     def __set_properties(self):
         # begin wxGlade: LinSnap.__set_properties
@@ -138,7 +142,9 @@ class LinSnap(wx.Frame):
         self.lin_snap_frame_toolbar.AddSimpleTool(2030, icon_delete_screenshot, "Delete Screenshot", "Deletes the selected screenshot from  disk.")
         
         self.lin_snap_frame_toolbar.AddSimpleTool(2035, icon_cloudapp, "Upload", "Uploads a collection or screenshot.")
-
+        self.lin_snap_frame_toolbar.AddSeparator()
+        self.lin_snap_frame_toolbar.AddControl(wx.StaticText(self.lin_snap_frame_toolbar, -1, "Search: "))
+        self.lin_snap_frame_toolbar.AddControl(self.search_text_ctrl)
 
     def _CfgFilesExist(self):
         if os.path.exists(os.path.join(self.CFG_DIR)):
@@ -202,6 +208,11 @@ class LinSnap(wx.Frame):
             self.screen_grabber_win.SetCurrentCollection(col_name)
         event.Skip()
 
+    def OnSearch(self, event):
+        search_str = self.search_text_ctrl.GetValue() # get search string
+        search_keys = map(unicode.strip, search_str.split(",")) # split it at "," separator and sanitize whitespace
+        
+
     def _PopulateCollectionList(self):
         # add existing collections to the list
         self.collection_list.ClearAll()
@@ -212,7 +223,6 @@ class LinSnap(wx.Frame):
         index = self.collection_list.GetFocusedItem()
         if index != -1:
             return self.collection_list.GetItemText(index)
-        
         
     def OnClose(self, event):
         exit(0)

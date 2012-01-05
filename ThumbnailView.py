@@ -56,7 +56,9 @@ class ThumbnailView(ThumbnailCtrl):
     def ShowCollection(self, collection):
         # thread = GenericThread(self.scroll_ctrl.ShowDir, collection.dir)
         # thread.start()
+        self.app_instance.Freeze()
         self.scroll_ctrl.ShowDir(collection.dir)
+	self.Thaw()
 
     def OnThumbClick(self, event):
         event.Skip()

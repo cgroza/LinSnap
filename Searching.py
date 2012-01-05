@@ -22,14 +22,20 @@ class SearchElem():
         self.tags = []
 
 class Search():
-    def __init__(self, elements):
+    def __init__(self, elements, search_keys):
         self.elems = elems
+        self.search_keys = search_keys
+        self._matched_elems = []
 
     def DoSearch(self):
         pass
 
-    def CalcSearchIndex(self, elem):
-        pass
+    def CalcMatches(self, elem):
+         matches = []
+         for m in [filter(lambda e: key in e.tags) for key in self.search_keys]:
+             matches.extend(m)
+         return (matches, len(matches))
 
     def GetMatches(self):
-        pass
+        return self._matched_elems
+

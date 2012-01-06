@@ -157,3 +157,16 @@ class ThumbnailView(ThumbnailCtrl):
                 else:
                     wx.MessageDialog(None, "Invalid screenshot name. Name already exists or empty.", "Name Error", wx.ICON_EXCLAMATION).ShowModal()
 
+
+    def ShowFiles(self, file_list):
+        thumbs = []
+        # build thumbnail objects for every file
+        for path in file_list:
+            directory, filename = os.path.split(path)
+            thumbs.append(Thumb(self.scroll_ctrl, directory, filename))
+
+        max_index = self.GetItemCount() - 1
+        self.Freeze()
+        self.scroll_ctrl.Clear()
+        self.scroll_ctrl.ShowThumbs(thumbs, "Search Result")
+        self.Thaw()

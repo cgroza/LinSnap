@@ -211,8 +211,19 @@ class LinSnap(wx.Frame):
     def OnSearch(self, event):
         search_str = self.search_text_ctrl.GetValue() # get search string
         search_keys = map(unicode.strip, search_str.split(",")) # split it at "," separator and sanitize whitespace
-        
+        all_elems = []
+        all_collections = self.collections.GetCollections()
+        for col in all_collections:
+            all_elems.extend(col.GetElements())
 
+        search = Search(all_elems, search_keys)
+        search.DoSearch()
+        matches = search.GetMatches()
+        paths = []
+        for m in matches:
+            paths.append(m.elem_path)
+        self.thumbnail_view.ShowFiles(paths)
+        
     def _PopulateCollectionList(self):
         # add existing collections to the list
         self.collection_list.ClearAll()

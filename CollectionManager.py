@@ -88,6 +88,10 @@ class CollectionManager():
                 return e
         return False
 
+    def GetElements(self):
+        iterator = self.elem_tree.iter("Element")
+        return list(iterator)
+
     def AddElement(self, element):
         self.elem_tree.getroot().insert(1, element)
         self.SaveTree()

@@ -68,6 +68,12 @@ class CollectionDatabase():
     def GetCollection(self, collection_name):
         return self.collections[collection_name]
 
+    def GetCollections(self):
+        cols = []
+        for col in self.collections:
+            cols.append(self.collections[col])
+        return cols
+
     def CreateCollection(self, collection_name, collection_folder):
         if collection_name not in self.collections:
             collection_file = os.path.join(self.collections_dir, ".".join([collection_name, "xml"]))

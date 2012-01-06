@@ -88,6 +88,14 @@ class CollectionManager():
                 return e
         return False
 
+    def FindElementByPath(self, elem_path):
+        iterator = self.elem_tree.iter("Element")
+        for e in iterator:
+            if e.get("path") == elem_path:
+                return e
+        return False
+            
+
     def GetElements(self):
         iterator = self.elem_tree.iter("Element")
         return list(iterator)
@@ -95,6 +103,14 @@ class CollectionManager():
     def AddElement(self, element):
         self.elem_tree.getroot().insert(1, element)
         self.SaveTree()
+
+    def RemoveElement(self, name):
+        iterator = self.elem_tree.iter("Element")
+        for e in iterator:
+            if e.get("name") == name:
+                self.elem_tree.getroot().remove(e)
+                self.SaveTree()                
+        
 
     def DeleteElement(self, name):
         iterator = self.elem_tree.iter("Element")
@@ -114,14 +130,6 @@ class CollectionManager():
                 e.set("path", new_path) 
                 self.SaveTree()
 
-    def MoveElement(self, elem, new_collection):
-        iterator = self.elem_tree.iter("Element")
-        for e in iterator:
-            if e.get("name") == elem:
-                new_collection.AddElement(e)
-                shutil.move(e.get("path"), os.path.join(new_collection.dir, e.get("name")))
-                self.elem_tree.getroot().remove(e)
-                self.SaveTree()
 
     def IndexFiles(self):
         all_files = os.listdir(self.dir)

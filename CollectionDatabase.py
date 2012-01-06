@@ -64,6 +64,27 @@ class CollectionDatabase():
             for col in self.collections:
                 col_file.write(col + " = " + self.collections[col].collection_file + "\n")
                 
+    def FindElement(self, file_path):
+        for col_name in self.collections:
+            element = self.collections[col_name].FindElementByPath(file_path)
+            if element != False:
+                return element
+        return False
+
+    def FindAndRemoveElement(self, file_path):
+        for col_name in self.collections:
+            collection = self.collections[col_name]
+            element = collection.FindElementByPath(file_path)
+            if element != False:
+                collection.RemoveElement(element.get("name"))
+
+    def FindFileAndDelete(self, file_path):
+        for col_name in self.collections:
+            col = self.collections[col_name]
+            elem = col.FindElementByPath(file_path)
+            if elem != False:
+                col.DeleteElement(elem.get("name"))
+                return
 
     def GetCollection(self, collection_name):
         return self.collections[collection_name]
@@ -109,3 +130,17 @@ class CollectionDatabase():
         del self.collections[collection_name]
         self.collections[new_collection_name] = collection
         self._WriteCollectionsFile()
+
+    def MoveElement(self, elem, new_collection):
+        new_path = os.path.join(new_collection.dir, elem.get("name"))
+        shutil.move(elem.get("path"), new_path)
+        elem.set("path", new_path)
+        new_collection.AddElement(elem)
+
+    def FindParentCollection(self, element):
+        for col_name in self.collections:
+            col = self.collections[col_name]
+            if col.FindElementByPath(element.get("path")) != False:
+                return col
+        
+    

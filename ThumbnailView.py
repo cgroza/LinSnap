@@ -113,46 +113,44 @@ class ThumbnailView(ThumbnailCtrl):
             return self.scroll_ctrl.GetItem(index).GetFileName()
 
     def DeleteScreenshot(self):
-        scrn_name = self.GetSelectedScrnName()
-        col_name = self.app_instance.GetSelectedCollection()
-        if scrn_name and col_name:
-            dlg = wx.MessageDialog(None, "Are you sure? The real file will be deleted!", "Delete Screenshot", style = wx.ICON_QUESTION | wx.YES_NO)
-            resp = dlg.ShowModal()
-            if resp == wx.ID_YES:
-                collection = self.app_instance.collections.GetCollection(col_name)
-                if collection:
-                    collection.DeleteElement(scrn_name)
-                    self.scroll_ctrl.ShowDir(self.scroll_ctrl.GetShowDir())
-
+        thumb_index = self.scroll_ctrl.GetSelection()
+        dlg = wx.MessageDialog(None, "Are you sure? The real file will be deleted!", "Delete Screenshot", style = wx.ICON_QUESTION | wx.YES_NO)
+        resp = dlg.ShowModal()
+        if resp == wx.ID_YES and thumb_index != -1:
+            thumb = self.scroll_ctrl.GetItem(thumb_index)
+            self.app_instance.collections.FindFileAndDelete(thumb.GetOriginalImage())
+            self.scroll_ctrl.RemoveItemAt(thumb_index)
 
     def MoveScreenshot(self):
-        scrn_name = self.GetSelectedScrnName()
-        col_name = self.app_instance.GetSelectedCollection()
-        if scrn_name and col_name:
+        thumb_index = self.scroll_ctrl.GetSelection()
+        if thumb_index != -1:
             # get destination collection
             dlg = MoveScrnDlg(self, -1, self.app_instance.collections.collections.keys())
             data = dlg.ShowModal()
             dest_collection_name = data[1]
-
             if dest_collection_name and data[0] == wx.ID_OK:
-                collection = self.app_instance.collections.GetCollection(col_name)
+                thumb = self.scroll_ctrl.GetItem(thumb_index)
+                element = self.app_instance.collections.FindElement(thumb.GetOriginalImage())
                 dest_collection = self.app_instance.collections.GetCollection(dest_collection_name)
-                if collection and dest_collection:
-                    collection.MoveElement(scrn_name, dest_collection)
-                    self.scroll_ctrl.ShowDir(self.scroll_ctrl.GetShowDir())
+                if element != False and dest_collection:
+                    self.app_instance.collections.FindAndRemoveElement(element.get("path"))
+                    self.app_instance.collections.MoveElement(element, dest_collection)
+                    self.scroll_ctrl.RemoveItemAt(thumb_index)
 
 
     def RenameScreenshot(self):
-        scrn_name = self.GetSelectedScrnName()
-        col_name = self.app_instance.GetSelectedCollection()
-        if scrn_name and col_name:
+        thumb_index = self.scroll_ctrl.GetSelection()
+        if thumb_index != -1:
             dlg = wx.TextEntryDialog(None, "Rename screenshot to: ", "Rename Screenshot")
             resp = dlg.ShowModal()
             if resp == wx.ID_OK:
                 new_scrn_name = dlg.GetValue()
-                collection = self.app_instance.collections.GetCollection(col_name)
-                if new_scrn_name and collection:
-                    collection.RenameElement(scrn_name, new_scrn_name + "." + scrn_name.split(".")[-1])
+                thumb = self.scroll_ctrl.GetItem(thumb_index)
+                element = self.app_instance.collections.FindElement(thumb.GetOriginalImage())
+                if new_scrn_name and element != False:
+                    element_name = element.get("name")
+                    self.app_instance.collections.FindParentCollection(element).RenameElement(
+                        element_name, new_scrn_name + "." + element_name.split(".")[-1])
                     self.scroll_ctrl.ShowDir(self.scroll_ctrl.GetShowDir())
                 else:
                     wx.MessageDialog(None, "Invalid screenshot name. Name already exists or empty.", "Name Error", wx.ICON_EXCLAMATION).ShowModal()

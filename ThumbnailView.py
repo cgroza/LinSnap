@@ -163,7 +163,7 @@ class ThumbnailView(ThumbnailCtrl):
         # build thumbnail objects for every file
         for path in file_list:
             directory, filename = os.path.split(path)
-            thumbs.append(Thumb(self.scroll_ctrl, directory, filename))
+            thumbs.append(Thumb(self.scroll_ctrl, directory, filename, filename))
 
         max_index = self.GetItemCount() - 1
         self.Freeze()

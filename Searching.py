@@ -43,6 +43,8 @@ class Search():
             if e.search_index != 0:
                 matched_elems.append(e)
         # sort elements by search_index score
+        #and then reverse the list to achieve descending order
+        sorted(matched_elems, key = lambda e: e.search_index).reverse()
         self._matched_elems = matched_elems
 
 

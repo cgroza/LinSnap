@@ -124,36 +124,38 @@ class ThumbnailView(ThumbnailCtrl):
             self.scroll_ctrl.RemoveItemAt(thumb_index)
 
     def MoveScreenshot(self):
-        thumb_index = self.scroll_ctrl.GetSelection()
-        if thumb_index != -1:
+        thumb = self.GetSelectedThumbnail()
+        if thumb is not None:
             # get destination collection
             dlg = MoveScrnDlg(self, -1, self.app_instance.collections.collections.keys())
             data = dlg.ShowModal()
             dest_collection_name = data[1]
             if dest_collection_name and data[0] == wx.ID_OK:
-                thumb = self.scroll_ctrl.GetItem(thumb_index)
                 element = self.app_instance.collections.FindElement(thumb.GetOriginalImage())
                 dest_collection = self.app_instance.collections.GetCollection(dest_collection_name)
                 if element != False and dest_collection:
                     self.app_instance.collections.FindAndRemoveElement(element.get("path"))
                     self.app_instance.collections.MoveElement(element, dest_collection)
+                    thumb_index = self.scroll_ctrl.GetSelection()
                     self.scroll_ctrl.RemoveItemAt(thumb_index)
 
 
     def RenameScreenshot(self):
-        thumb_index = self.scroll_ctrl.GetSelection()
-        if thumb_index != -1:
-            dlg = wx.TextEntryDialog(None, "Rename screenshot to: ", "Rename Screenshot")
-            resp = dlg.ShowModal()
-            if resp == wx.ID_OK:
-                new_scrn_name = dlg.GetValue()
-                thumb = self.scroll_ctrl.GetItem(thumb_index)
+        dlg = wx.TextEntryDialog(None, "Rename screenshot to: ", "Rename Screenshot")
+        resp = dlg.ShowModal()
+        if resp == wx.ID_OK:
+            new_scrn_name = dlg.GetValue()
+            thumb = self.GetSelectedThumbnail()
+            if thumb is not None:
                 element = self.app_instance.collections.FindElement(thumb.GetOriginalImage())
                 if new_scrn_name and element != False:
                     element_name = element.get("name")
+                    new_scrn_name += "." + element_name.split(".")[-1]
                     self.app_instance.collections.FindParentCollection(element).RenameElement(
-                        element_name, new_scrn_name + "." + element_name.split(".")[-1])
-                    self.scroll_ctrl.ShowDir(self.scroll_ctrl.GetShowDir())
+                        element_name, new_scrn_name)
+                    thumb.SetCaption(new_scrn_name)
+                    thumb.SetFileName(new_scrn_name)
+                    self.scroll_ctrl.UpdateProp()
                 else:
                     wx.MessageDialog(None, "Invalid screenshot name. Name already exists or empty.", "Name Error", wx.ICON_EXCLAMATION).ShowModal()
 
@@ -164,7 +166,6 @@ class ThumbnailView(ThumbnailCtrl):
         for path in file_list:
             directory, filename = os.path.split(path)
             thumbs.append(Thumb(self.scroll_ctrl, directory, filename, filename))
-
         max_index = self.GetItemCount() - 1
         self.Freeze()
         self.scroll_ctrl.Clear()

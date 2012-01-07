@@ -176,6 +176,13 @@ class LinSnap(wx.Frame):
         event.Skip()
 
     def OnUpload(self, event):
+        thumb = self.thumbnail_view.GetSelectedThumbnail()
+        if thumb is not None:
+            self.upload_win.SetUploadFiles([thumb.GetOriginalImage()])
+        else:
+            wx.MessageDialog(None, "No file selected for upload.", style=wx.ICON_EXCLAMATION).ShowModal()
+            event.Skip()
+            return
         self.upload_win.upload_choice.SetSelection(0)
         self.upload_win.Show()
         event.Skip()

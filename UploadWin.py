@@ -127,7 +127,9 @@ class UploadWin(wx.Frame):
         parent = self.GetParent()
         thumb_view = parent.thumbnail_view
         if selection == "Selected File":
-            self.files = [os.path.join(thumb_view.GetShowDir(), thumb_view.scroll_ctrl.GetItem(thumb_view.scroll_ctrl.GetSelection()).GetFileName())]
+            thumb = thumb_view.GetSelectedThumbnail()
+            if thumb is not None:
+                self.files = [thumb.GetOriginalImage()]
         elif selection == "Selected Collection":
             index = parent.collection_list.GetFocusedItem()
             if index != -1:

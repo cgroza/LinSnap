@@ -68,8 +68,10 @@ class ThumbnailView(ThumbnailCtrl):
         event.Skip()
 
     def OnMenuUpload(self, event):
-        #file_path = os.path.join(self.GetShowDir(), self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName())
-        # self.app_instance.upload_win.SetUploadFiles([file_path])
+        thumb = self.GetSelectedThumbnail()
+        if thumb is not None:
+            self.app_instance.upload_win.SetUploadFiles([thumb.GetOriginalImage()])
+        
         self.app_instance.upload_win.upload_choice.SetSelection(0)
         self.app_instance.upload_win.Show()
         event.Skip()
@@ -168,3 +170,8 @@ class ThumbnailView(ThumbnailCtrl):
         self.scroll_ctrl.Clear()
         self.scroll_ctrl.ShowThumbs(thumbs, "Search Result")
         self.Thaw()
+
+    def GetSelectedThumbnail(self):
+        thumb_index = self.scroll_ctrl.GetSelection()
+        if thumb_index != -1:
+            return self.scroll_ctrl.GetItem(thumb_index)

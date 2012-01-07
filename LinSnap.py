@@ -25,7 +25,9 @@ from ThumbnailView import *
 from CollectionDatabase import *
 from AddCollectionWin import *
 from UploadWin import *
+from EditTagsWin import *
 from Searching import *
+
 
 # begin wxGlade: extracode
 # end wxGlade
@@ -53,9 +55,8 @@ class LinSnap(wx.Frame):
 
         self.add_collection_win = AddCollectionWin(self)
         self.screen_grabber_win = SreenGrabberWindow(self.collections, parent = self)
-        # self.screen_grabber_win.Show()
         self.upload_win = UploadWin(self)
-
+        self.edit_tags_win = EditTagsWin(self)
         # Menu Bar
         self.lin_snap_frame_menubar = wx.MenuBar()
         self.SetMenuBar(self.lin_snap_frame_menubar)

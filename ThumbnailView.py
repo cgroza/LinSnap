@@ -49,7 +49,7 @@ class ThumbnailView(ThumbnailCtrl):
         self.Bind(wx.EVT_MENU, self.OnMenuDelete, id = 1010)
         self.Bind(wx.EVT_MENU, self.OnMenuMove, id = 1015)
         self.Bind(wx.EVT_MENU, self.OnMenuUpload, id = 1020)
-
+        self.Bind(wx.EVT_MENU, self.OnMenuEditTags, id = 1025)
         self.scroll_ctrl.SetPopupMenu(self.popup_menu)
 
 
@@ -102,8 +102,16 @@ class ThumbnailView(ThumbnailCtrl):
         event.Skip()
 
     def OnMenuEditTags(self, event):
-        item_name = self.scroll_ctrl.GetItem(self.scroll_ctrl.GetSelection()).GetFileName()
+        self.EditTags()
         event.Skip()
+
+    def EditTags(self):
+        thumb = self.GetSelectedThumbnail()
+        if thumb is not None:
+            elem = self.app_instance.collections.FindElement(thumb.GetOriginalImage())
+            if elem is not None: 
+                self.app_instance.edit_tags_win.SetTargetElement(elem)
+                self.app_instance.edit_tags_win.Show()
 
     def _GetCurrentCollection(self):
         collection_name = self.app_instance.collection_list.GetItemText(self.app_instance.collection_list.GetFocusedItem())
@@ -133,7 +141,7 @@ class ThumbnailView(ThumbnailCtrl):
             if dest_collection_name and data[0] == wx.ID_OK:
                 element = self.app_instance.collections.FindElement(thumb.GetOriginalImage())
                 dest_collection = self.app_instance.collections.GetCollection(dest_collection_name)
-                if element != False and dest_collection:
+                if element is not None and dest_collection:
                     self.app_instance.collections.FindAndRemoveElement(element.get("path"))
                     self.app_instance.collections.MoveElement(element, dest_collection)
                     thumb_index = self.scroll_ctrl.GetSelection()
@@ -148,7 +156,7 @@ class ThumbnailView(ThumbnailCtrl):
             thumb = self.GetSelectedThumbnail()
             if thumb is not None:
                 element = self.app_instance.collections.FindElement(thumb.GetOriginalImage())
-                if new_scrn_name and element != False:
+                if new_scrn_name and element is not None:
                     element_name = element.get("name")
                     new_scrn_name += "." + element_name.split(".")[-1]
                     self.app_instance.collections.FindParentCollection(element).RenameElement(

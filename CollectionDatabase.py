@@ -69,7 +69,6 @@ class CollectionDatabase():
             element = self.collections[col_name].FindElementByPath(file_path)
             if element != False:
                 return element
-        return False
 
     def FindAndRemoveElement(self, file_path):
         for col_name in self.collections:

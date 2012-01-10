@@ -31,6 +31,7 @@ class UploadWin(wx.Frame):
         self.upload_bt = wx.Button(self.main_panel, -1, "Upload")
         self.cancel_bt = wx.Button(self.main_panel, -1, "Cancel")
 
+        self.uploading_dlg = None
         self.__set_properties()
         self.__do_event_bindings()
         self.__do_layout()
@@ -113,6 +114,8 @@ class UploadWin(wx.Frame):
         self._SaveAuthInfo()
         uploader = Uploader(self._ReadAuthFile(), self._OnDownloadComplete)
         if uploader.auth_ok:
+            self.uploading_dlg = wx.MessageDialog(None, "Upload has started.\n Press OK.", "Upoad Status", style=wx.ICON_INFORMATION).ShowModal()
+            self.Hide()
             if not uploader.Upload(self.files, self.service_box.GetStringSelection()):
                 wx.MessageDialog(None, "Upload unsuccessful. Please check internet connection.", style=wx.ICON_EXCLAMATION).ShowModal()
         else:

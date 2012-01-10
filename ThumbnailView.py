@@ -142,9 +142,9 @@ class ThumbnailView(ThumbnailCtrl):
                 element = self.app_instance.collections.FindElement(thumb.GetOriginalImage())
                 dest_collection = self.app_instance.collections.GetCollection(dest_collection_name)
                 if element is not None and dest_collection:
+                    thumb_index = self.scroll_ctrl.GetSelection()
                     self.app_instance.collections.FindAndRemoveElement(element.get("path"))
                     self.app_instance.collections.MoveElement(element, dest_collection)
-                    thumb_index = self.scroll_ctrl.GetSelection()
                     self.scroll_ctrl.RemoveItemAt(thumb_index)
 
 

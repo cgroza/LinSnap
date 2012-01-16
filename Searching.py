@@ -25,13 +25,21 @@ class SearchElem():
         self.matched_tags = []
         self.tags = elem.get("tags").split()
 
+
 class Search():
     def __init__(self, elements, search_keys):
         self.elems = map(SearchElem , elements) # convert XML data to simpler structures
         self.search_keys = search_keys
         self._matched_elems = []
-        
 
+
+    def DoSearch():
+        pass
+
+    def GetMatches(self):
+        return self._matched_elems
+
+class SearchByTags(Search):
     def DoSearch(self):
         # apply CalcMatches to every element and add the ones that scored matches to a list.
         matched_elems = []
@@ -54,6 +62,8 @@ class Search():
         # return tuple with the matched tags and number of mathced items.
         return (matches, len(matches))
 
-    def GetMatches(self):
-        return self._matched_elems
 
+class SearchByName(Search):
+    def DoSearch(self):
+        self._matched_elems = [e for e in self.elems if e.elem_name in self.search_keys]
+        sorted(self._matched_elems, key = lambda e: e.elem_name)

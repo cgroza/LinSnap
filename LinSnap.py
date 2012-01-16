@@ -67,6 +67,7 @@ class LinSnap(wx.Frame):
         self.lin_snap_frame_toolbar = wx.ToolBar(self, -1)
         self.SetToolBar(self.lin_snap_frame_toolbar)
         self.search_text_ctrl = wx.TextCtrl(self.lin_snap_frame_toolbar, -1, style = wx.TE_PROCESS_ENTER)
+        self.search_mode_choice = wx.Choice(self.lin_snap_frame_toolbar, -1, choices = ["By Tags", "By Name"])
 
         self.__build_toolbar()
         # Tool Bar end
@@ -146,6 +147,7 @@ class LinSnap(wx.Frame):
         self.lin_snap_frame_toolbar.AddSeparator()
         self.lin_snap_frame_toolbar.AddControl(wx.StaticText(self.lin_snap_frame_toolbar, -1, "Search: "))
         self.lin_snap_frame_toolbar.AddControl(self.search_text_ctrl)
+        self.lin_snap_frame_toolbar.AddControl(self.search_mode_choice)
 
     def _CfgFilesExist(self):
         if os.path.exists(os.path.join(self.CFG_DIR)):
@@ -224,13 +226,19 @@ class LinSnap(wx.Frame):
         for col in all_collections:
             all_elems.extend(col.GetElements())
 
-        search = Search(all_elems, search_keys)
+        search_mode = self.search_mode_choice.GetCurrentSelection()
+
+        if search_mode == 0:
+            search = SearchByTags(all_elems, search_keys)
+        elif search_mode == 1:
+            search = SearchByName(all_elems, search_keys)
+
         search.DoSearch()
         matches = search.GetMatches()
         paths = []
         for m in matches:
             paths.append(m.elem_path)
-        self.thumbnail_view.ShowFiles(paths)
+            self.thumbnail_view.ShowFiles(paths)
         
     def _PopulateCollectionList(self):
         # add existing collections to the list

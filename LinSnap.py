@@ -55,7 +55,7 @@ class LinSnap(wx.Frame):
         self.v_splitter_pane_1 = wx.Panel(self.v_splitter, -1)
 
         self.add_collection_win = AddCollectionWin(self)
-        self.screen_grabber_win = SreenGrabberWindow(self.collections, parent = self)
+        self.screen_grabber_win = ScreenGrabberWindow(self.collections, parent = self)
         self.upload_win = UploadWin(self)
         self.edit_tags_win = EditTagsWin(self)
         self.scrn_viewer = ViewScreenshot(self)
@@ -77,7 +77,6 @@ class LinSnap(wx.Frame):
         self._PopulateCollectionList()
 
         self.thumbnail_view = ThumbnailView(self.v_splitter_pane_2, self, -1)
-        self.screen_grabber_win = SreenGrabberWindow(self.collections, self)
         
         self.__set_properties()
         self.__do_event_bindings()

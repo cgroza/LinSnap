@@ -19,7 +19,7 @@
 import wx, os
 import CollectionManager
 import CollectionDatabase
-
+from ScreenshotCroper import *
 
 class ScreenGrabber():
     """
@@ -106,7 +106,7 @@ class ScreenGrabber():
         scrn_img.SaveFile(save_path, wx.BITMAP_TYPE_PNG)
 
 
-class SreenGrabberWindow(wx.Frame):
+class ScreenGrabberWindow(wx.Frame):
     class ScrnShotTimer(wx.Timer):
         def __init__(self, func):
             wx.Timer.__init__(self)
@@ -124,6 +124,7 @@ class SreenGrabberWindow(wx.Frame):
         wx.Frame.__init__(self, parent , id, style = wx.MINIMIZE_BOX | wx.MAXIMIZE_BOX |
                           wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
 
+        self.crop_win = ScreenshotCroper(self)
         self.parent = parent
         self.collection_db = collection_db
         self.top_panel = wx.Panel(self, -1)
@@ -139,10 +140,8 @@ class SreenGrabberWindow(wx.Frame):
         self.bt_take_scrn = wx.Button(self.top_panel, -1, "Take Screenshot")
         self.bt_cancel = wx.Button(self.top_panel, -1, "Cancel")
 
-        self.__selecting_region = False
+
         self.__take_screenshot = False
-        self.__start_mouse_pos = (0,0)
-        self.__end_mouse_pos = (0,0)
 
         self.__set_properties()
         self.__do_layout()

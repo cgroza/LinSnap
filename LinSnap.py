@@ -26,6 +26,7 @@ from CollectionDatabase import *
 from AddCollectionWin import *
 from UploadWin import *
 from EditTagsWin import *
+from ViewScreenshot import *
 from Searching import *
 
 
@@ -57,6 +58,7 @@ class LinSnap(wx.Frame):
         self.screen_grabber_win = SreenGrabberWindow(self.collections, parent = self)
         self.upload_win = UploadWin(self)
         self.edit_tags_win = EditTagsWin(self)
+        self.scrn_viewer = ViewScreenshot(self)
         # Menu Bar
         self.lin_snap_frame_menubar = wx.MenuBar()
         self.SetMenuBar(self.lin_snap_frame_menubar)
@@ -240,6 +242,10 @@ class LinSnap(wx.Frame):
             paths.append(m.elem_path)
             self.thumbnail_view.ShowFiles(paths)
         
+    def OnViewScrnshot(self, event):
+        self.thumbnail_view.ViewScreenshot()
+        event.Skip()
+
     def _PopulateCollectionList(self):
         # add existing collections to the list
         self.collection_list.ClearAll()

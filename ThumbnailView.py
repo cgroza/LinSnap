@@ -45,6 +45,7 @@ class ThumbnailView(ThumbnailCtrl):
         self.popup_menu.Append(1020, "Upload", "Upload the thumbnail to a web service.")
         self.popup_menu.Append(1025, "Edit Tags", "Edit the tags of the selected thumbnail.")
 
+        self.Bind(wx.EVT_MENU, self.OnViewScrnshot, id = 1000)
         self.Bind(wx.EVT_MENU, self.OnMenuRename, id = 1005)
         self.Bind(wx.EVT_MENU, self.OnMenuDelete, id = 1010)
         self.Bind(wx.EVT_MENU, self.OnMenuMove, id = 1015)
@@ -167,6 +168,21 @@ class ThumbnailView(ThumbnailCtrl):
                 else:
                     wx.MessageDialog(None, "Invalid screenshot name. Name already exists or empty.", "Name Error", wx.ICON_EXCLAMATION).ShowModal()
 
+
+    def OnViewScrnshot(self, event):
+        self.ViewScreenshot()
+        event.Skip()
+
+
+    def ViewScreenshot(self):
+        thumb_index = self.scroll_ctrl.GetSelection()
+        if thumb_index != -1:
+            thumb = self.scroll_ctrl.GetItem(thumb_index)
+            element = self.app_instance.collections.FindElement(thumb.GetOriginalImage())
+            if element is not None:
+                self.app_instance.scrn_viewer.ShowScrnshot(element)
+
+        
 
     def ShowFiles(self, file_list):
         thumbs = []

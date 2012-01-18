@@ -152,7 +152,7 @@ class CollectionManager():
         for e in iterator:
             if e.get("name") not in img_files:
                 self.elem_tree.getroot().remove(e)
-
+        self.SaveTree()
 
     def GetFilePaths(self):
         iterator = self.elem_tree.iter("Element")

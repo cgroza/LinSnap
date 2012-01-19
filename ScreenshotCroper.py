@@ -30,3 +30,9 @@ class ScreenshotCroper(ViewScreenshot):
     def OnCrop(self, event):
         self.CropImage()
         event.Skip()
+
+    def ShowScrnshot(self, element):
+        ViewScreenshot.ShowScrnshot(self, element)
+        sz = self.GetSize()
+        self.SetSize((sz.GetWidth(), sz.GetHeight() + 60))
+        self.rubber_band.reset()

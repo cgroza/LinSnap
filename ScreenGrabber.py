@@ -101,7 +101,7 @@ class ScreenGrabberWindow(wx.Frame):
     def __set_properties(self):
         # begin wxGlade: SreenGrabberWindow.__set_properties
         self.SetTitle("Take Screenshot")
-        self.SetSize((400, 200))
+        self.SetSize((400, 170))
         self.bt_take_scrn.SetFocus()
         # end wxGlade
 
@@ -151,7 +151,6 @@ class ScreenGrabberWindow(wx.Frame):
 
     def OnTakeScreenshot(self, event):
         self.__take_screenshot = True
-        sel = self.options_radio_box.GetSelection()
         # Hide LinSnap
         if self.hide_linsnap.GetValue():
             self.parent.Hide()

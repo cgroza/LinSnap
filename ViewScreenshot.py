@@ -29,18 +29,18 @@ class ViewScreenshot(wx.Frame):
         # scale the image, preserving the aspect ratio
         w = self.image.GetWidth()
         h = self.image.GetHeight()
-        if w > h:
-            new_w = self.photo_max_size
-            new_h = self.photo_max_size * h / w
-        else:
-            new_h = self.photo_max_size
-            new_w = self.photo_max_size * w / h
-            self.image = self.image.Scale(new_w,new_h)
+        dsize = wx.GetDisplaySize()
+        
+        if w >= dsize.GetWidth() or h >= dsize.GetHeight():
+            h = dsize.GetHeight() - dsize.GetHeight() / 3
+            w = dsize.GetWidth() - dsize.GetWidth() / 3
+            self.image = self.image.Scale(w,h)        
+
 
         self.image_ctrl.SetBitmap(wx.BitmapFromImage(self.image))
         self.current_file = element.get("path")
         self.panel.Refresh()
-        self.SetSize((w, h))
+        self.SetSize((w,h))
         self.Show()
 
     def GetImage(self):

@@ -12,6 +12,7 @@ class ScreenshotCroper(ViewScreenshot):
         self.rubber_band.reset(aspectRatio=0.5)
         self.crop_btn = wx.Button(self.panel, -1, "Crop")
         self.save_btn = wx.Button(self.panel, -1, "Save")
+
         self.crop_btn.Bind(wx.EVT_BUTTON, self.OnCrop)
         self.main_sizer.Add(self.crop_btn, 0, wx.ALL|wx.EXPAND)
         self.main_sizer.Add(self.save_btn, 0, wx.ALL|wx.EXPAND)
@@ -20,12 +21,15 @@ class ScreenshotCroper(ViewScreenshot):
 
     def CropImage(self):
         coords = self.rubber_band.getCurrentExtent()
+        print coords
         if coords is None:
             return
         self.image = self.image.GetSubImage(wx.Rect(coords[0], coords[1], coords[2], coords[3]))
         self.image_ctrl.SetBitmap(wx.BitmapFromImage(self.image))
         self.image.SaveFile(self.current_file, wx.BITMAP_TYPE_PNG)
+        self.rubber_band.reset()
         self.panel.Refresh()
+
 
     def OnCrop(self, event):
         self.CropImage()

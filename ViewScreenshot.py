@@ -6,6 +6,7 @@ class ViewScreenshot(wx.Frame):
         wx.Frame.__init__(self, parent, id, title)
         self.panel = wx.Panel(self)
         self.photo_max_size = 240
+        self.current_file = ""
         self.__create_gui()
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         
@@ -37,6 +38,7 @@ class ViewScreenshot(wx.Frame):
             self.image = self.image.Scale(new_w,new_h)
 
         self.image_ctrl.SetBitmap(wx.BitmapFromImage(self.image))
+        self.current_file = element.get("path")
         self.panel.Refresh()
         self.SetSize((w, h))
         self.Show()

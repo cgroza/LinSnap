@@ -26,19 +26,9 @@ class ScreenGrabber():
     This class manages the screenshot taking process.
     """
 
-    @staticmethod
-    def TakeScrnCurrentWin(save_path):
-        import gtk.gdk
-        w = gtk.gdk.window_at_pointer()[0]
-        sz = w.get_size()
-        print "The size of the window is %d x %d" % sz
-        pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB,False,8,sz[0],sz[1])
-        pb = pb.get_from_drawable(w,w.get_colormap(),0,0,0,0,sz[0],sz[1])
-        #if (pb != None):
-        pb.save(save_path,"png")
 
     @staticmethod
-    def TakeScrnWholeScreen(save_path):
+    def TakeScreenshot(save_path):
         """ Takes a screenshot of the screen at give pos & size (rect). """
         #Create a DC for the whole screen area
         dcScreen = wx.ScreenDC()
@@ -70,41 +60,6 @@ class ScreenGrabber():
         bmp.ConvertToImage().SaveFile(save_path, wx.BITMAP_TYPE_PNG)
         
 
-    @staticmethod
-    def TakeRegionScreenShot(save_path):
-        """ Takes a screenshot of the screen at give pos & size (rect). """
-
-        #Create a DC for the whole screen area
-        dcScreen = wx.ScreenDC()
-
-        #Create a Bitmap that will later on hold the screenshot image
-        #Note that the Bitmap must have a size big enough to hold the screenshot
-        #-1 means using the current default colour depth
-        bmp = wx.EmptyBitmap(rect.width, rect.height)
-
-        #Create a memory DC that will be used for actually taking the screenshot
-        memDC = wx.MemoryDC()
-
-        #Tell the memory DC to use our Bitmap
-        #all drawing action on the memory DC will go to the Bitmap now
-        memDC.SelectObject(bmp)
-
-        #Blit (in this case copy) the actual screen on the memory DC
-        #and thus the Bitmap
-        memDC.Blit( 0, #Copy to this X coordinate
-            0, #Copy to this Y coordinate
-            rect.width, #Copy this width
-            rect.height, #Copy this height
-            dcScreen, #From where do we copy?
-            rect.x, #What's the X offset in the original DC?
-            rect.y  #What's the Y offset in the original DC?
-            )
-
-        #Select the Bitmap out of the memory DC by selecting a new
-        #uninitialized Bitmap
-        memDC.SelectObject(wx.NullBitmap)
-        scrn_img.SaveFile(save_path, wx.BITMAP_TYPE_PNG)
-
 
 class ScreenGrabberWindow(wx.Frame):
     class ScrnShotTimer(wx.Timer):
@@ -114,10 +69,6 @@ class ScreenGrabberWindow(wx.Frame):
 
         def Notify(self):
             self.__func()
-
-    scrnshot_options = {"Whole screen" : ScreenGrabber.TakeScrnWholeScreen,
-                        "Current window": ScreenGrabber.TakeScrnCurrentWin,
-                        "Selected region": ScreenGrabber.TakeRegionScreenShot}
 
     def __init__(self, collection_db, parent, id = -1):
         # begin wxGlade: SreenGrabberWindow.__init__
@@ -132,8 +83,7 @@ class ScreenGrabberWindow(wx.Frame):
         self.choice_collection = wx.Choice(self.top_panel, -1, choices= collection_db.collections.keys())
         self.filename_label = wx.StaticText(self.top_panel, -1, "Screenshot file name:")
         self.filename_text = wx.TextCtrl(self.top_panel, -1, "")
-        self.scrn_opt_label = wx.StaticText(self.top_panel, -1, "Screenshot options:")
-        self.options_radio_box = wx.RadioBox(self.top_panel, -1, "Capture", choices=["Whole screen", "Current window", "Selected region"], majorDimension=0, style=wx.RA_SPECIFY_COLS)
+
         self.delay_label = wx.StaticText(self.top_panel, -1, "Screenshot delay: ")
         self.delay_spin_ctrl = wx.SpinCtrl(self.top_panel, -1, "1", min=0, max=100, style=wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.TE_AUTO_URL|wx.TE_NOHIDESEL)
         self.hide_linsnap = wx.CheckBox(self.top_panel, -1, "Hide LinSnap")
@@ -152,7 +102,6 @@ class ScreenGrabberWindow(wx.Frame):
         # begin wxGlade: SreenGrabberWindow.__set_properties
         self.SetTitle("Take Screenshot")
         self.SetSize((400, 200))
-        self.options_radio_box.SetSelection(0)
         self.bt_take_scrn.SetFocus()
         # end wxGlade
 
@@ -173,8 +122,6 @@ class ScreenGrabberWindow(wx.Frame):
         h_filename_sizer.Add(filename_txt_sz, 1, wx.EXPAND, 0)
         v_top_sizer.Add(h_filename_sizer, 1, wx.EXPAND, 0)
         v_sizer.Add(v_top_sizer, 0, wx.EXPAND, 0)
-        scrn_opt_v_sizer.Add(self.scrn_opt_label, 0, wx.ALL|wx.EXPAND, 0)
-        scrn_opt_v_sizer.Add(self.options_radio_box, 0, wx.ALL|wx.EXPAND, 0)
         delay_h_sizer.Add(self.delay_label, 0, wx.ALL|wx.EXPAND, 0)
         delay_h_sizer.Add(self.delay_spin_ctrl, 0, wx.LEFT|wx.RIGHT, 0)
         scrn_opt_v_sizer.Add(delay_h_sizer, 0, wx.ALL|wx.EXPAND, 3)
@@ -194,9 +141,7 @@ class ScreenGrabberWindow(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.bt_take_scrn.Bind(wx.EVT_BUTTON, self.OnTakeScreenshot)
         self.bt_cancel.Bind(wx.EVT_BUTTON, self.OnClose)
-        self.top_panel.Bind(wx.EVT_LEFT_UP, self.OnMouseLeftUp)
-        self.Bind(wx.EVT_LEFT_DOWN, self.OnMouseLeftDown)
-        self.Bind(wx.EVT_MOTION, self.OnMouseMove)
+
 
     def SetCollectionList(self, collections):
         self.choice_collection.SetItems(collections)
@@ -222,34 +167,10 @@ class ScreenGrabberWindow(wx.Frame):
 
         event.Skip()
 
-    def OnMouseLeftDown(self, event):
-        print "OnMouseLeftDown"
-        if self.__take_screenshot:
-            self.__start_mouse_pos = event.GetPosTuple()
-
-        event.Skip()
-
-    def OnMouseLeftUp(self, event):
-        print "OnMouseLeftUp"
-        if self.__take_screenshot:
-            self.__selecting_region = False
-            self.__end_mouse_pos = event.GetPosTuple()
-            self.TakeScreenshot()
-
-        event.Skip()
-
-    def OnMouseMove(self, event):
-        print "OnMouseMove"
-        if self.__take_screenshot and self.__selecting_region and event.Dragging():
-            pass
-        event.Skip()
-
-        
     def TakeScreenshot(self):
         collection_name = self.choice_collection.GetStringSelection()
         scrn_filename = self.filename_text.GetValue()
 
-        scrn_rect = wx.Rect(0,0, 1024, 768)
         if not collection_name:
             wx.MessageDialog(None, "No collection selected. Please choose a collection.", "Error", wx.OK | wx.ICON_ERROR).ShowModal()
             return
@@ -262,20 +183,20 @@ class ScreenGrabberWindow(wx.Frame):
         # we may have to move all this in a separate thread because it hangs the UI.
         path = os.path.join(selected_col.dir, scrn_filename) + ".png"
         # get current selected screenshot option and call the appropriate procedure via the dict.
-        option = self.options_radio_box.GetStringSelection()
-        self.__class__.scrnshot_options[option](path)
+        ScreenGrabber.TakeScreenshot(path)
 
         self.__take_screenshot = False
 
         # add it to the collection xml tree
         elem_attrs = { "tags" : "", "name" : scrn_filename, "path" : path }
-        selected_col.CreateElement(elem_attrs)
+        new_elem = selected_col.CreateElement(elem_attrs)
         # refresh the view
         self.parent.thumbnail_view.ShowCollection(self.parent.collections.GetCollection(collection_name))
 
         # bring back LinSnap windows
         self.parent.Show()
         self.Show()
+        self.crop_win.ShowScrnshot(new_elem)
 
     def OnClose(self, event):
         # reset filename 

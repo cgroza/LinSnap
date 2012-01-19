@@ -66,8 +66,10 @@ class CollectionManager():
         self.elem_tree.write(self.collection_file, "utf-8")
 
     def CreateElement(self, attrs):
-        self.elem_tree.getroot().insert(1, Element("Element", attrs))
+        elem  = Element("Element", attrs)
+        self.elem_tree.getroot().insert(1, elem)
         self.SaveTree()
+        return elem
         
     def GetElementAttribute(self, name, attr):
         iterator = self.elem_tree.iter("Element")

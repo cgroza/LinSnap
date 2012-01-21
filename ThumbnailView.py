@@ -44,6 +44,7 @@ class ThumbnailView(ThumbnailCtrl):
         self.popup_menu.Append(1015, "Move", "Move the selected thumbnail to antother collection.")
         self.popup_menu.Append(1020, "Upload", "Upload the thumbnail to a web service.")
         self.popup_menu.Append(1025, "Edit Tags", "Edit the tags of the selected thumbnail.")
+        self.popup_menu.Append(1030, "Crop", "Crop the screenshot.")
 
         self.Bind(wx.EVT_MENU, self.OnViewScrnshot, id = 1000)
         self.Bind(wx.EVT_MENU, self.OnMenuRename, id = 1005)
@@ -51,6 +52,7 @@ class ThumbnailView(ThumbnailCtrl):
         self.Bind(wx.EVT_MENU, self.OnMenuMove, id = 1015)
         self.Bind(wx.EVT_MENU, self.OnMenuUpload, id = 1020)
         self.Bind(wx.EVT_MENU, self.OnMenuEditTags, id = 1025)
+        self.Bind(wx.EVT_MENU, self.OnMenuCrop, id = 1030)
         self.scroll_ctrl.SetPopupMenu(self.popup_menu)
 
 
@@ -125,12 +127,14 @@ class ThumbnailView(ThumbnailCtrl):
 
     def DeleteScreenshot(self):
         thumb_index = self.scroll_ctrl.GetSelection()
-        dlg = wx.MessageDialog(None, "Are you sure? The real file will be deleted!", "Delete Screenshot", style = wx.ICON_QUESTION | wx.YES_NO)
-        resp = dlg.ShowModal()
-        if resp == wx.ID_YES and thumb_index != -1:
+        if thumb_index != -1:
             thumb = self.scroll_ctrl.GetItem(thumb_index)
-            self.app_instance.collections.FindFileAndDelete(thumb.GetOriginalImage())
-            self.scroll_ctrl.RemoveItemAt(thumb_index)
+            if thumb is not None:
+                dlg = wx.MessageDialog(None, "Are you sure? The real file will be deleted!", "Delete Screenshot", style = wx.ICON_QUESTION | wx.YES_NO)
+                resp = dlg.ShowModal()
+                if resp == wx.ID_YES:
+                    self.app_instance.collections.FindFileAndDelete(thumb.GetOriginalImage())
+                    self.scroll_ctrl.RemoveItemAt(thumb_index)
 
     def MoveScreenshot(self):
         thumb = self.GetSelectedThumbnail()
@@ -182,8 +186,15 @@ class ThumbnailView(ThumbnailCtrl):
             if element is not None:
                 self.app_instance.scrn_viewer.ShowScrnshot(element)
 
+    def OnMenuCrop(self, event):
+        item_name = self.GetSelectedScrnName()
+        thumb_index = self.scroll_ctrl.GetSelection()
+        if item_name is not None:
+            thumb = self.scroll_ctrl.GetItem(thumb_index)
+            element = self.app_instance.collections.FindElement(thumb.GetOriginalImage())
+            if element is not None:
+                self.app_instance.screen_grabber_win.crop_win.ShowScrnshot(element)
         
-
     def ShowFiles(self, file_list):
         thumbs = []
         # build thumbnail objects for every file

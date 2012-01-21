@@ -67,21 +67,21 @@ class CollectionDatabase():
     def FindElement(self, file_path):
         for col_name in self.collections:
             element = self.collections[col_name].FindElementByPath(file_path)
-            if element != False:
+            if element is not None:
                 return element
 
     def FindAndRemoveElement(self, file_path):
         for col_name in self.collections:
             collection = self.collections[col_name]
             element = collection.FindElementByPath(file_path)
-            if element != False:
+            if element is not None:
                 collection.RemoveElement(element.get("name"))
 
     def FindFileAndDelete(self, file_path):
         for col_name in self.collections:
             col = self.collections[col_name]
             elem = col.FindElementByPath(file_path)
-            if elem != False:
+            if elem is not None:
                 col.DeleteElement(elem.get("name"))
                 return
 
@@ -139,7 +139,7 @@ class CollectionDatabase():
     def FindParentCollection(self, element):
         for col_name in self.collections:
             col = self.collections[col_name]
-            if col.FindElementByPath(element.get("path")) != False:
+            if col.FindElementByPath(element.get("path")) is not None:
                 return col
         
     

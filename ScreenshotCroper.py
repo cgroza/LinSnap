@@ -21,15 +21,19 @@ class ScreenshotCroper(ViewScreenshot):
 
     def CropImage(self):
         coords = self.rubber_band.getCurrentExtent()
-        print coords
+
         if coords is None:
             return
-        self.image = self.image.GetSubImage(wx.Rect(coords[0], coords[1], coords[2], coords[3]))
+
+        x0, y0, x1, y1 = coords
+        width = x1 - x0
+        height = y1 - y0
+
+        self.image = self.image.GetSubImage(wx.Rect(x0, y0, width, height))
+
         self.image_ctrl.SetBitmap(wx.BitmapFromImage(self.image))
         self.image.SaveFile(self.current_file, wx.BITMAP_TYPE_PNG)
         self.rubber_band.reset()
-        self.panel.Refresh()
-
 
     def OnCrop(self, event):
         self.CropImage()

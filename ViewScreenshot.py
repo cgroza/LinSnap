@@ -24,13 +24,12 @@ class ViewScreenshot(wx.Frame):
         
 
     def ShowScrnshot(self, element):
-        filepath = element.get("path")
-        self.image = wx.Image(filepath, wx.BITMAP_TYPE_ANY)
+        self.current_file = element.get("path")
+        self.image = wx.Image(self.current_file, wx.BITMAP_TYPE_ANY)
         # scale the image, preserving the aspect ratio
         w = self.image.GetWidth()
         h = self.image.GetHeight()
         dsize = wx.GetDisplaySize()
-        
         if w >= dsize.GetWidth() or h >= dsize.GetHeight():
             h = dsize.GetHeight() - dsize.GetHeight() / 3
             w = dsize.GetWidth() - dsize.GetWidth() / 3
@@ -38,7 +37,6 @@ class ViewScreenshot(wx.Frame):
 
 
         self.image_ctrl.SetBitmap(wx.BitmapFromImage(self.image))
-        self.current_file = element.get("path")
         self.panel.Refresh()
         self.SetSize((w,h))
         self.Show()

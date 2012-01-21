@@ -88,15 +88,12 @@ class CollectionManager():
         for e in iterator:
             if e.get("name") == elem_name:
                 return e
-        return False
 
     def FindElementByPath(self, elem_path):
         iterator = self.elem_tree.iter("Element")
         for e in iterator:
             if e.get("path") == elem_path:
                 return e
-        return False
-            
 
     def GetElements(self):
         iterator = self.elem_tree.iter("Element")
@@ -146,7 +143,7 @@ class CollectionManager():
         img_files = [ f for f in all_files if f.split(".")[-1].lower() in CollectionManager.__img_extensions ]
         # check for new files
         for img_f in img_files:
-            if self.FindElement(img_f) == False:
+            if self.FindElement(img_f) is None:
                 self.CreateElement({ "tags": "", "name" : img_f, "path" : os.path.join(self.dir, img_f)})
 
         # check for deleted files

@@ -168,19 +168,19 @@ class ScreenGrabberWindow(wx.Frame):
 
     def TakeScreenshot(self):
         collection_name = self.choice_collection.GetStringSelection()
-        scrn_filename = self.filename_text.GetValue()
+        scrn_filename = self.filename_text.GetValue()+".png"
 
         if not collection_name:
             wx.MessageDialog(None, "No collection selected. Please choose a collection.", "Error", wx.OK | wx.ICON_ERROR).ShowModal()
             return
 
         selected_col = self.collection_db.GetCollection(collection_name)
-        if not scrn_filename or selected_col.FindElement(scrn_filename):
+        if len(scrn_filename) == 4 or selected_col.FindElement(scrn_filename) is not None:
             wx.MessageDialog(None, "Invalid file name. File name is empty or already exists.", "Error", wx.OK | wx.ICON_ERROR).ShowModal()
             return
 
         # we may have to move all this in a separate thread because it hangs the UI.
-        path = os.path.join(selected_col.dir, scrn_filename) + ".png"
+        path = os.path.join(selected_col.dir, scrn_filename)
         # get current selected screenshot option and call the appropriate procedure via the dict.
         ScreenGrabber.TakeScreenshot(path)
 

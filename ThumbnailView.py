@@ -40,7 +40,7 @@ class ThumbnailView(ThumbnailCtrl):
         # Add popup menu elements
         self.popup_menu.Append(1000, "View", "Open a preview of the selected thumbnail.")
         self.popup_menu.Append(1005, "Rename", "Rename the selected thumbnail.")
-        self.popup_menu.Append(1010, "Delete", "Delete the selected thumbnail. The real file is deleted also.")
+        self.popup_menu.Append(1010, "Delete", "Delete the selected thumbnails. The real files are deleted also.")
         self.popup_menu.Append(1015, "Move", "Move the selected thumbnail to antother collection.")
         self.popup_menu.Append(1020, "Upload", "Upload the thumbnail to a web service.")
         self.popup_menu.Append(1025, "Edit Tags", "Edit the tags of the selected thumbnail.")
@@ -55,6 +55,9 @@ class ThumbnailView(ThumbnailCtrl):
         self.Bind(wx.EVT_MENU, self.OnMenuCrop, id = 1030)
         self.scroll_ctrl.SetPopupMenu(self.popup_menu)
 
+        # workaround, the parent class uses setattr on this function,
+        # so it cannot be overriden the usual way
+        self.GetSelectedItem = self.GetSelectedItem_
 
     def ShowCollection(self, collection):
         # thread = GenericThread(self.scroll_ctrl.ShowDir, collection.dir)
@@ -66,15 +69,13 @@ class ThumbnailView(ThumbnailCtrl):
     def OnThumbClick(self, event):
         event.Skip()
 
-
     def OnThumbDoubleClick(self, event):
         event.Skip()
 
     def OnMenuUpload(self, event):
-        thumb = self.GetSelectedThumbnail()
+        thumb = self.GetSelectedItem()
         if thumb is not None:
             self.app_instance.upload_win.SetUploadFiles([thumb.GetOriginalImage()])
-        
         self.app_instance.upload_win.upload_choice.SetSelection(0)
         self.app_instance.upload_win.Show()
         event.Skip()
@@ -95,7 +96,6 @@ class ThumbnailView(ThumbnailCtrl):
             else:
                 wx.MessageDialog(None, "Invalid collection name. Name already exists or empty.", "Name Error", wx.ICON_EXCLAMATION).ShowModal()
 
-
     def OnMenuDelete(self, event):
         self.DeleteScreenshot()
         event.Skip()
@@ -109,7 +109,7 @@ class ThumbnailView(ThumbnailCtrl):
         event.Skip()
 
     def EditTags(self):
-        thumb = self.GetSelectedThumbnail()
+        thumb = self.GetSelectedItem()
         if thumb is not None:
             elem = self.app_instance.collections.FindElement(thumb.GetOriginalImage())
             if elem is not None: 
@@ -126,43 +126,49 @@ class ThumbnailView(ThumbnailCtrl):
             return self.scroll_ctrl.GetItem(index).GetFileName()
 
     def DeleteScreenshot(self):
-        thumb_index = self.scroll_ctrl.GetSelection()
-        if thumb_index != -1:
-            thumb = self.scroll_ctrl.GetItem(thumb_index)
-            if thumb is not None:
-                dlg = wx.MessageDialog(None, "Are you sure? The real file will be deleted!", "Delete Screenshot", style = wx.ICON_QUESTION | wx.YES_NO)
+        thumb_indexes = self.GetSelectedIndexes()
+        if len(thumb_indexes) != 0:
+            thumbs = self.GetSelectedItems()
+            if len(thumbs) != 0:
+                dlg = wx.MessageDialog(None, "Are you sure? The real files will be deleted!", "Delete Screenshots", style = wx.ICON_QUESTION | wx.YES_NO)
                 resp = dlg.ShowModal()
                 if resp == wx.ID_YES:
-                    self.app_instance.collections.FindFileAndDelete(thumb.GetOriginalImage())
-                    self.scroll_ctrl.RemoveItemAt(thumb_index)
+                    # delete every selected file
+                    for thumb in thumbs:
+                        self.app_instance.collections.FindFileAndDelete(thumb.GetOriginalImage())
+                    # remove item from the current view
+                    self.RemoveThumbs(thumb_indexes)
+
 
     def MoveScreenshot(self):
-        thumb = self.GetSelectedThumbnail()
-        if thumb is not None:
+        thumbs = self.GetSelectedItems()
+        if len(thumbs) != 0:
             # get destination collection
             dlg = MoveScrnDlg(self, -1, self.app_instance.collections.collections.keys())
             data = dlg.ShowModal()
             dest_collection_name = data[1]
             if dest_collection_name and data[0] == wx.ID_OK:
-                element = self.app_instance.collections.FindElement(thumb.GetOriginalImage())
+                elements = [self.app_instance.collections.FindElement(thumb.GetOriginalImage()) for thumb in thumbs]
                 dest_collection = self.app_instance.collections.GetCollection(dest_collection_name)
-                if element is not None and dest_collection:
-                    thumb_index = self.scroll_ctrl.GetSelection()
-                    self.app_instance.collections.FindAndRemoveElement(element.get("path"))
-                    self.app_instance.collections.MoveElement(element, dest_collection)
-                    self.scroll_ctrl.RemoveItemAt(thumb_index)
+                if len(elements) != 0 and dest_collection:
+                    thumb_indexes = self.scroll_ctrl.GetSelectedIndexes()
+                    for element in  elements:
+                        self.app_instance.collections.FindAndRemoveElement(element.get("path"))
+                        self.app_instance.collections.MoveElement(element, dest_collection)
 
+                    self.RemoveThumbs(thumb_indexes)
 
     def RenameScreenshot(self):
         dlg = wx.TextEntryDialog(None, "Rename screenshot to: ", "Rename Screenshot")
         resp = dlg.ShowModal()
         if resp == wx.ID_OK:
             new_scrn_name = dlg.GetValue()
-            thumb = self.GetSelectedThumbnail()
+            thumb = self.GetSelectedItem()
             if thumb is not None:
                 element = self.app_instance.collections.FindElement(thumb.GetOriginalImage())
                 if new_scrn_name and element is not None:
                     element_name = element.get("name")
+                    # add the extiension to the new screenshot name
                     new_scrn_name += "." + element_name.split(".")[-1]
                     self.app_instance.collections.FindParentCollection(element).RenameElement(
                         element_name, new_scrn_name)
@@ -172,25 +178,21 @@ class ThumbnailView(ThumbnailCtrl):
                 else:
                     wx.MessageDialog(None, "Invalid screenshot name. Name already exists or empty.", "Name Error", wx.ICON_EXCLAMATION).ShowModal()
 
-
     def OnViewScrnshot(self, event):
         self.ViewScreenshot()
         event.Skip()
 
-
     def ViewScreenshot(self):
-        thumb_index = self.scroll_ctrl.GetSelection()
-        if thumb_index != -1:
-            thumb = self.scroll_ctrl.GetItem(thumb_index)
+        thumb = self.GetSelectedItem()
+        if thumb is not None:
             element = self.app_instance.collections.FindElement(thumb.GetOriginalImage())
             if element is not None:
                 self.app_instance.scrn_viewer.ShowScrnshot(element)
 
     def OnMenuCrop(self, event):
         item_name = self.GetSelectedScrnName()
-        thumb_index = self.scroll_ctrl.GetSelection()
         if item_name is not None:
-            thumb = self.scroll_ctrl.GetItem(thumb_index)
+            thumb = self.GetSelectedItem()
             element = self.app_instance.collections.FindElement(thumb.GetOriginalImage())
             if element is not None:
                 self.app_instance.screen_grabber_win.crop_win.ShowScrnshot(element)
@@ -207,7 +209,34 @@ class ThumbnailView(ThumbnailCtrl):
         self.scroll_ctrl.ShowThumbs(thumbs, "Search Result")
         self.Thaw()
 
-    def GetSelectedThumbnail(self):
-        thumb_index = self.scroll_ctrl.GetSelection()
-        if thumb_index != -1:
-            return self.scroll_ctrl.GetItem(thumb_index)
+    # Syntactic sugar for self.scroll_ctrl.GetSelectedItem(-1)
+    def GetSelectedItem_(self):
+        return self.scroll_ctrl.GetSelectedItem(-1)
+
+    def GetSelectedItems(self):
+        return [self.scroll_ctrl.GetItem(index) for index in self.GetSelectedIndexes()]
+
+    def GetSelectedIndexes(self):
+        indexes = []
+        items = self.scroll_ctrl.GetItemCount()
+        for i in range(0,items):
+            try:
+                current_index = self.scroll_ctrl.GetSelection(i)
+            except IndexError:
+                return indexes
+            indexes.append(current_index)
+        return sorted(indexes)
+
+    def RemoveThumbs(self, thumb_indexes):
+        self.Freeze()
+        if thumb_indexes == [0]:
+            self.scroll_ctrl.RemoveItemAt(0)
+            return
+
+        i = 0
+        for index in thumb_indexes:
+            for k in range(i + 1 , len(thumb_indexes)):
+                thumb_indexes[k] -= 1
+                self.scroll_ctrl.RemoveItemAt(index)
+                i =+ 1
+        self.Thaw()

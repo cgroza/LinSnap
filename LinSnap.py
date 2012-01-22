@@ -180,7 +180,7 @@ class LinSnap(wx.Frame):
         event.Skip()
 
     def OnUpload(self, event):
-        thumb = self.thumbnail_view.GetSelectedThumbnail()
+        thumb = self.thumbnail_view.GetSelectedItem()
         if thumb is not None:
             self.upload_win.SetUploadFiles([thumb.GetOriginalImage()])
         else:

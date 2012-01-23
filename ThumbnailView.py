@@ -151,8 +151,8 @@ class ThumbnailView(ThumbnailCtrl):
                 elements = [self.app_instance.collections.FindElement(thumb.GetOriginalImage()) for thumb in thumbs]
                 dest_collection = self.app_instance.collections.GetCollection(dest_collection_name)
                 if len(elements) != 0 and dest_collection:
-                    thumb_indexes = self.scroll_ctrl.GetSelectedIndexes()
-                    for element in  elements:
+                    thumb_indexes = self.GetSelectedIndexes()
+                    for element in elements:
                         self.app_instance.collections.FindAndRemoveElement(element.get("path"))
                         self.app_instance.collections.MoveElement(element, dest_collection)
 
@@ -223,20 +223,12 @@ class ThumbnailView(ThumbnailCtrl):
             try:
                 current_index = self.scroll_ctrl.GetSelection(i)
             except IndexError:
-                return indexes
+                return sorted(indexes)
             indexes.append(current_index)
         return sorted(indexes)
 
     def RemoveThumbs(self, thumb_indexes):
         self.Freeze()
-        if thumb_indexes == [0]:
-            self.scroll_ctrl.RemoveItemAt(0)
-            return
-
-        i = 0
-        for index in thumb_indexes:
-            for k in range(i + 1 , len(thumb_indexes)):
-                thumb_indexes[k] -= 1
-                self.scroll_ctrl.RemoveItemAt(index)
-                i =+ 1
+        for index in reversed(thumb_indexes):
+            self.scroll_ctrl.RemoveItemAt(index)
         self.Thaw()

@@ -39,6 +39,7 @@ class ViewScreenshot(wx.Frame):
         self.image_ctrl.SetBitmap(wx.BitmapFromImage(self.image))
         self.panel.Refresh()
         self.SetSize((w,h))
+        self.Center()
         self.Show()
 
     def GetImage(self):

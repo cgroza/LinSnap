@@ -190,6 +190,10 @@ class ThumbnailView(ThumbnailCtrl):
                 self.app_instance.scrn_viewer.ShowScrnshot(element)
 
     def OnMenuCrop(self, event):
+        self.CropScreenshot()
+        event.Skip()
+
+    def CropScreenshot(self):
         item_name = self.GetSelectedScrnName()
         if item_name is not None:
             thumb = self.GetSelectedItem()
@@ -229,6 +233,9 @@ class ThumbnailView(ThumbnailCtrl):
 
     def RemoveThumbs(self, thumb_indexes):
         self.Freeze()
-        for index in reversed(thumb_indexes):
+        # Sort to get ascending indexes and reverse so we remove them from the 
+        # end. This way, the indexes we have to remove do not change and we avoid
+        # changing the list.
+        for index in reversed(sorted(thumb_indexes)):
             self.scroll_ctrl.RemoveItemAt(index)
         self.Thaw()

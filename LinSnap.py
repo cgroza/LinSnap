@@ -92,6 +92,8 @@ class LinSnap(wx.Frame):
         self.Bind(wx.EVT_TOOL, self.OnMoveScreenshot, id = 2020)
         self.Bind(wx.EVT_TOOL, self.OnRenameScreenshot, id = 2025)
         self.Bind(wx.EVT_TOOL, self.OnDeleteScreenshot, id = 2030)
+        self.Bind(wx.EVT_TOOL, self.OnViewScrnshot, id = 2033)
+        self.Bind(wx.EVT_TOOL, self.OnCropcrnshot, id = 2034)
         self.Bind(wx.EVT_TOOL, self.OnUpload, id = 2035)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.search_text_ctrl.Bind(wx.EVT_TEXT_ENTER, self.OnSearch)
@@ -134,7 +136,8 @@ class LinSnap(wx.Frame):
         icon_move_screenshot = wx.Image('icons/icon-move_screenshot.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
         icon_rename_screenshot = wx.Image('icons/icon-rename_screenshot.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
         icon_take_screenshot = wx.Image('icons/icon-take_screenshot.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
-
+        icon_view_screenshot = wx.Image('icons/icon-view_screenshot.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+        icon_crop_screenshot = wx.Image('icons/icon-crop_screenshot.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
 
         self.lin_snap_frame_toolbar.AddSimpleTool(2000, icon_add_collection, "Add Collection", "Adds and indexes a new collection.")
         self.lin_snap_frame_toolbar.AddSimpleTool(2005, icon_remove_collection, "Remove Collection", "Removes the selected collection.")
@@ -143,9 +146,12 @@ class LinSnap(wx.Frame):
         self.lin_snap_frame_toolbar.AddSimpleTool(2020, icon_move_screenshot, "Move Screenshot", "Moves the selected screenshot into another collection.")
         self.lin_snap_frame_toolbar.AddSimpleTool(2025, icon_rename_screenshot, "Rename Screenshot", "Renames the selected screenshot to a different name.")
         self.lin_snap_frame_toolbar.AddSimpleTool(2030, icon_delete_screenshot, "Delete Screenshot", "Deletes the selected screenshot from  disk.")
-        
-        self.lin_snap_frame_toolbar.AddSimpleTool(2035, icon_cloudapp, "Upload", "Uploads a collection or screenshot.")
+        self.lin_snap_frame_toolbar.AddSimpleTool(2033, icon_view_screenshot, "View Screenshot", "Shows the selected screenshot.")
+        self.lin_snap_frame_toolbar.AddSimpleTool(2034, icon_crop_screenshot, "Crop Screenshot", "Crop the selected screenshot.")
+        self.lin_snap_frame_toolbar.AddSimpleTool(2035, icon_cloudapp, "View", "View the selected screenshot.")
+
         self.lin_snap_frame_toolbar.AddSeparator()
+
         self.lin_snap_frame_toolbar.AddControl(wx.StaticText(self.lin_snap_frame_toolbar, -1, "Search: "))
         self.lin_snap_frame_toolbar.AddControl(self.search_text_ctrl)
         self.lin_snap_frame_toolbar.AddControl(self.search_mode_choice)
@@ -217,6 +223,7 @@ class LinSnap(wx.Frame):
             self.thumbnail_view.ShowCollection(self.collections.GetCollection(col_name))
             # self.thumbnail_view.scroll_ctrl.ShowDir(self.collections.GetCollection(col_name).dir)
             self.screen_grabber_win.SetCurrentCollection(col_name)
+        self.SetSizeWH(self.GetSize().GetWidth()+1, self.GetSize().GetHeight())
         event.Skip()
 
     def OnSearch(self, event):
@@ -241,6 +248,10 @@ class LinSnap(wx.Frame):
             paths.append(m.elem_path)
             self.thumbnail_view.ShowFiles(paths)
         
+    def OnCropcrnshot(self, event):
+        self.thumbnail_view.CropScreenshot()
+        event.Skip()
+
     def OnViewScrnshot(self, event):
         self.thumbnail_view.ViewScreenshot()
         event.Skip()

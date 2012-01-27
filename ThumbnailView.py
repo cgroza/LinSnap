@@ -62,9 +62,9 @@ class ThumbnailView(ThumbnailCtrl):
     def ShowCollection(self, collection):
         # thread = GenericThread(self.scroll_ctrl.ShowDir, collection.dir)
         # thread.start()
-        self.app_instance.Freeze()
         self.scroll_ctrl.ShowDir(collection.dir)
-	self.Thaw()
+        # thumbnailctrl suffers from a race condition.
+        wx.MilliSleep(100)
 
     def OnThumbClick(self, event):
         event.Skip()
@@ -208,10 +208,9 @@ class ThumbnailView(ThumbnailCtrl):
             directory, filename = os.path.split(path)
             thumbs.append(Thumb(self.scroll_ctrl, directory, filename, filename))
         max_index = self.GetItemCount() - 1
-        self.Freeze()
         self.scroll_ctrl.Clear()
         self.scroll_ctrl.ShowThumbs(thumbs, "Search Result")
-        self.Thaw()
+
 
     # Syntactic sugar for self.scroll_ctrl.GetSelectedItem(-1)
     def GetSelectedItem_(self):
@@ -232,10 +231,9 @@ class ThumbnailView(ThumbnailCtrl):
         return sorted(indexes)
 
     def RemoveThumbs(self, thumb_indexes):
-        self.Freeze()
         # Sort to get ascending indexes and reverse so we remove them from the 
         # end. This way, the indexes we have to remove do not change and we avoid
         # changing the list.
         for index in reversed(sorted(thumb_indexes)):
             self.scroll_ctrl.RemoveItemAt(index)
-        self.Thaw()
+

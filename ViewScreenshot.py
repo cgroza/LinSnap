@@ -33,8 +33,8 @@ class ViewScreenshot(wx.Frame):
         h = self.image.GetHeight()
         dsize = wx.GetDisplaySize()
         if w >= dsize.GetWidth() or h >= dsize.GetHeight():
-            h = dsize.GetHeight() - dsize.GetHeight() / 3
-            w = dsize.GetWidth() - dsize.GetWidth() / 3
+            h = dsize.GetHeight() * (float(2) / 3)
+            w = dsize.GetWidth() * (float(2) / 3)
             self.image = self.image.Scale(w,h)        
 
 

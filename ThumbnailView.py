@@ -64,7 +64,7 @@ class ThumbnailView(ThumbnailCtrl):
         # thread.start()
         self.scroll_ctrl.ShowDir(collection.dir)
         # thumbnailctrl suffers from a race condition.
-        wx.MilliSleep(100)
+        wx.MilliSleep(200)
 
     def OnThumbClick(self, event):
         event.Skip()

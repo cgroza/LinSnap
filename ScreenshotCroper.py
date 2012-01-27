@@ -24,12 +24,14 @@ class ScreenshotCroper(ViewScreenshot):
         self.Fit()
 
     def OnSave(self, event):
+        w = self.image.GetWidth()
+        h = self.image.GetHeight()
+        save_img = self.image.Scale(w / (float(2) / 3), h / (float (2) /3))
         self.image.SaveFile(self.current_file, wx.BITMAP_TYPE_PNG)
         event.Skip()
 
     def CropImage(self):
         coords = self.rubber_band.getCurrentExtent()
-
         if coords is None:
             return
 

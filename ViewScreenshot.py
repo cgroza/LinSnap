@@ -14,9 +14,11 @@ class ViewScreenshot(wx.Frame):
         self.image = wx.EmptyImage(240,240)
         self.image_ctrl = wx.StaticBitmap(self.panel, wx.ID_ANY,
                                        wx.BitmapFromImage(self.image))
-  
-        self.main_sizer = wx.BoxSizer(wx.VERTICAL)
+
+
+        self.main_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.main_sizer.Add(self.image_ctrl, 0, wx.ALL|wx.EXPAND)
+
 
         self.panel.SetSizer(self.main_sizer)
         self.panel.Fit()

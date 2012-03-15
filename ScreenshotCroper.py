@@ -6,6 +6,8 @@ from ViewScreenshot import *
 class ScreenshotCroper(ViewScreenshot):
     def __init__(self, parent, id = -1):
         ViewScreenshot.__init__(self, parent, id)
+
+        # create menubar and bind events
         self.menubar = wx.MenuBar( ) 
         self.scrnshot = wx.Menu()
         self.scrnshot.Append(1000, "Crop")

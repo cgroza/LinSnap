@@ -32,7 +32,6 @@ class Search():
         self.search_keys = search_keys
         self._matched_elems = []
 
-
     def DoSearch():
         pass
 

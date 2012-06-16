@@ -22,7 +22,6 @@ class ViewScreenshot(wx.Frame):
         self.panel.Fit()
         self.panel.Layout()
         
-
     def ShowScrnshot(self, element):
         self.current_element = element
         self.image = wx.Image(self.current_element.get("path"), wx.BITMAP_TYPE_ANY)

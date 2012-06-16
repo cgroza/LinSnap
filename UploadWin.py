@@ -178,7 +178,6 @@ class Uploader:
         except:
             self.auth_ok = False
 
-
     def SetAuthDict(self, auth_dict):
         self.__auth_dict = auth_dict
         self.callback = callback

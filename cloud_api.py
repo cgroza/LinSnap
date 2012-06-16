@@ -60,7 +60,6 @@ class CloudApi(object):
         self.queue.put((req, callback))
     
     class ApiThread(threading.Thread):
-            
         def run(self):
             while True:
                 task = CloudApi.queue.get()
@@ -71,12 +70,11 @@ class CloudApi(object):
                         if task[1]:
                             task[1](self.data)
                     except urllib2.HTTPError, e:
-                        print "HTTP Error Code:" + str(e.code)
+                        print("HTTP Error Code:" + str(e.code))
                     except urllib2.URLError, e:
-                        print e.reason
+                        print(e.reason)
             
     class UploadThread(threading.Thread):
-        
         def getUploadParams(self):
             req = urllib2.Request('http://my.cl.ly/items/new')
             req.add_header('Accept', 'application/json')
@@ -109,9 +107,9 @@ class CloudApi(object):
                             if self.callback:
                                 self.callback(json.load(response))
                         except urllib2.HTTPError, e:
-                            print "HTTP Error Code:" + str(e.code)
+                            print("HTTP Error Code:" + str(e.code))
                         except urllib2.URLError, e:
-                            print e.reason
+                            print(e.reason)
                         except IOError, e:
-                            print "IOError when opening file to upload: "+filePath
+                            print("IOError when opening file to upload: "+filePath)
            

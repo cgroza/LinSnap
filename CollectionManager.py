@@ -109,7 +109,6 @@ class CollectionManager():
             if e.get("name") == name:
                 self.elem_tree.getroot().remove(e)
                 self.SaveTree()                
-        
 
     def DeleteElement(self, name):
         iterator = self.elem_tree.iter("Element")
@@ -129,14 +128,12 @@ class CollectionManager():
                 e.set("path", new_path) 
                 self.SaveTree()
 
-
     def IndexFiles(self):
         all_files = os.listdir(self.dir)
         # filter image files
         img_files = [ f for f in all_files if f.split(".")[-1].lower() in CollectionManager.__img_extensions ]
         for img_f in img_files:
             self.CreateElement({ "tags": "", "name" : img_f, "path" : os.path.join(self.dir, img_f)})
-
 
     def CheckForNewFiles(self):
         all_files = os.listdir(self.dir)

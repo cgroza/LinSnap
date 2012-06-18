@@ -4,7 +4,10 @@ import wx
 class ViewScreenshot(wx.Frame):
     def __init__(self, parent, id = -1, title = 'Screenshot Viewer' ):
         wx.Frame.__init__(self, parent, id, title)
-        self.panel = wx.Panel(self)
+        self.panel = wx.ScrolledWindow(self)
+        self.panel.SetScrollRate(1,1)
+        self.panel.EnableScrolling(True,True)
+
         self.current_element = None
         self.__create_gui()
         self.Bind(wx.EVT_CLOSE, self.OnClose)

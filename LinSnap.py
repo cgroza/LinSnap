@@ -41,7 +41,7 @@ class LinSnap(wx.Frame):
         # begin wxGlade: LinSnap.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-
+        self.SetIcon(wx.Icon("icons/icon-take_screenshot.png", wx.BITMAP_TYPE_PNG))
         self.HOMEDIR = os.path.expanduser("~")
         self.CFG_DIR = os.path.join(self.HOMEDIR, ".config" ".LinSnap")
         self.CFG_DIR_FILE = os.path.join(self.CFG_DIR,"LinSnap.cfg")

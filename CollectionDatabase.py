@@ -43,6 +43,8 @@ class CollectionDatabase():
 
     def _ReadCollectionsFile(self):
         # for every line in file, split on equal and make the result key : string
+        if not os.path.exists(self.collections_dir):
+            os.makedirs(collections_dir)
         with open(self.collections_file, "r") as col_file:
             for line in col_file:
                 left_right = line.split("=")

@@ -43,7 +43,7 @@ class LinSnap(wx.Frame):
         wx.Frame.__init__(self, *args, **kwds)
 
         self.HOMEDIR = os.path.expanduser("~")
-        self.CFG_DIR = os.path.join(self.HOMEDIR, ".LinSnap")
+        self.CFG_DIR = os.path.join(self.HOMEDIR, ".config" ".LinSnap")
         self.CFG_DIR_FILE = os.path.join(self.CFG_DIR,"LinSnap.cfg")
 
         if not self._CfgFilesExist():
